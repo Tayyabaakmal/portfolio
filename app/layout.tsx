@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     name: profile.name,
     jobTitle: profile.title,
     url: siteUrl,
-    sameAs: [profile.contact.github, profile.contact.linkedin, profile.contact.fiverr],
+    sameAs: [profile.contact.github, profile.contact.linkedin, profile.contact.behance],
   };
   return (
     <html lang="en">
