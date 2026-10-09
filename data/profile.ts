@@ -49,9 +49,9 @@ export const profile = {
   ],
   // TODO: replace these placeholders with your real details.
   contact: {
-    email: "hello@example.com",
-    github: "https://github.com/your-username",
-    fiverr: "https://www.fiverr.com/your-username",
-    linkedin: "https://www.linkedin.com/in/your-username",
+    email: "tayyabaakmal1234@gmail.com",
+    github: "https://github.com/Tayyabaakmal",
+    Behance: "https://www.behance.net/TayyabaAkmal01",
+    linkedin: "https://www.linkedin.com/in/tayyaba-akmal",
   },
 };
