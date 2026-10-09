@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { profile } from "@/data/profile";
 import SmoothScroll from "@/components/SmoothScroll";
