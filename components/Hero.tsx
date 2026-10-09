@@ -93,9 +93,14 @@ export default function Hero() {
             <TransitionLink href="/#projects" className="rounded-full bg-paper px-6 py-3 font-medium text-ink transition-transform hover:-translate-y-0.5">
               See projects
             </TransitionLink>
-            <TransitionLink href="/#contact" className="rounded-full border border-paper/60 px-6 py-3 font-medium transition-colors hover:bg-paper hover:text-ink">
-              Get in touch
-            </TransitionLink>
+                        <a
+              href={profile.contact.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full border border-paper/60 px-6 py-3 font-medium transition-colors hover:bg-paper hover:text-ink"
+            >
+              Start a conversation
+            </a>
           </div>
         </div>
       </div>
