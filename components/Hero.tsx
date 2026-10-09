@@ -144,7 +144,7 @@ export default function Hero() {
       </div>
 
       {/* Services ticker */}
-      <div data-ticker className="relative z-10 overflow-hidden border-y border-paper/25 py-4">
+      <div data-ticker className="relative overflow-hidden border-y border-paper/25 bg-ink/20 py-4">
         <div data-track className="flex w-max gap-10 whitespace-nowrap text-lg font-medium uppercase tracking-wide">
           {[...ticker, ...ticker].map((t, i) => (
             <span key={i} className="flex items-center gap-10">
