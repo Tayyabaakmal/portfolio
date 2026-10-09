@@ -43,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <SmoothScroll />
         <Nav />
+        <FloatingWhatsApp />
         <main id="main">{children}</main>
         <Curtain />
       </body>
