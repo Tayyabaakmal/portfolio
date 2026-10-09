@@ -4,6 +4,7 @@ import { profile } from "@/data/profile";
 import SmoothScroll from "@/components/SmoothScroll";
 import Curtain from "@/components/Curtain";
 import Nav from "@/components/Nav";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com";
 
