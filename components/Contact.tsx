@@ -4,7 +4,7 @@ export default function Contact() {
   const c = profile.contact;
   const social = [
     { label: "GitHub", href: c.github },
-    { label: "Fiverr", href: c.fiverr },
+    { label: "Behance", href: c.behance },
     { label: "LinkedIn", href: c.linkedin },
   ];
   return (
