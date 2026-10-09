@@ -53,5 +53,7 @@ export const profile = {
     github: "https://github.com/Tayyabaakmal",
     behance: "https://www.behance.net/TayyabaAkmal01",
     linkedin: "https://www.linkedin.com/in/tayyaba-akmal",
+    whatsapp: "https://wa.me/923016812329",
+    calendly: "https://calendly.com/tayyabaakmal1234/30min",
   },
 };
