@@ -2,11 +2,11 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import TransitionLink from "./TransitionLink";
 import { profile } from "@/data/profile";
 
-const lines = ["Tayyaba", "Akmal"];
-const ticker = profile.expertise.map((e) => e.title);
+const roles = ["Creative Web Developer", "AI Solutions Specialist", "E-commerce Developer", "Automation Expert"];
+const headlineLines = ["Crafting Digital", "Experiences", "Beyond the", "Ordinary."];
+const nameLetters = profile.name.split("");
 
 export default function Hero() {
   const root = useRef<HTMLElement>(null);
@@ -14,144 +14,182 @@ export default function Hero() {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
     const el = root.current!;
-    const chars = Array.from(el.querySelectorAll<HTMLElement>("[data-char]"));
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
-      gsap.set(el.querySelectorAll("[data-fade]"), { opacity: 1 });
-      return;
-    }
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
     const ctx = gsap.context(() => {
+      if (reduced) return; // everything stays visible, nothing moves
+
+      // 1. Opening sequence: name rises out of its mask, then the headline, then the rest.
       gsap
-        .timeline()
-        .from(chars, { yPercent: 115, rotate: 4, duration: 1.3, ease: "expo.out", stagger: 0.05, delay: 0.15 })
-        .to("[data-fade]", { opacity: 1, y: 0, duration: 0.9, ease: "power3.out", stagger: 0.12 }, "-=0.7")
-        .from("[data-ticker]", { opacity: 0, duration: 1 }, "-=0.4");
+        .timeline({ defaults: { ease: "expo.out" } })
+        .from("[data-letter]", { yPercent: 120, rotate: 4, duration: 1.2, stagger: 0.045, delay: 0.2 })
+        .from("[data-line] > span", { yPercent: 110, duration: 1.1, stagger: 0.12 }, "-=0.7")
+        .from("[data-fade]", { y: 24, opacity: 0, duration: 0.9, stagger: 0.1, ease: "power3.out" }, "-=0.8")
+        .from("[data-float]", { opacity: 0, scale: 0.6, duration: 1.8, stagger: 0.2, ease: "power2.out" }, 0);
 
-      // Services strip loops forever.
-      gsap.to("[data-track]", { xPercent: -50, ease: "none", duration: 26, repeat: -1 });
+      // 2. Floating depth shapes drift gently forever.
+      gsap.to("[data-float]", {
+        y: "random(-30, 30)",
+        x: "random(-20, 20)",
+        duration: "random(5, 8)",
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        stagger: { each: 0.6, from: "random" },
+      });
 
-      gsap.to("[data-drift]", {
-        yPercent: -10,
+      // 3. Parallax on scroll.
+      gsap.to("[data-parallax]", {
+        yPercent: -18,
         ease: "none",
         scrollTrigger: { trigger: el, start: "top top", end: "bottom top", scrub: true },
       });
+
+      // 4. Magnetic buttons (fine pointers only).
+      if (fine) {
+        el.querySelectorAll<HTMLElement>("[data-magnetic]").forEach((btn) => {
+          const xTo = gsap.quickTo(btn, "x", { duration: 0.5, ease: "elastic.out(1, 0.4)" });
+          const yTo = gsap.quickTo(btn, "y", { duration: 0.5, ease: "elastic.out(1, 0.4)" });
+          btn.addEventListener("pointermove", (e) => {
+            const r = btn.getBoundingClientRect();
+            xTo((e.clientX - r.left - r.width / 2) * 0.3);
+            yTo((e.clientY - r.top - r.height / 2) * 0.3);
+          });
+          btn.addEventListener("pointerleave", () => {
+            xTo(0);
+            yTo(0);
+          });
+        });
+      }
     }, el);
 
-    // Glow follows the pointer on fine-pointer devices.
-    const glow = el.querySelector<HTMLElement>("[data-glow]");
-    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    let raf = 0;
+    // 5. Rotating role line.
+    let index = 0;
+    const roleEl = el.querySelector<HTMLElement>("[data-role]");
+    const timer = reduced || !roleEl
+      ? undefined
+      : window.setInterval(() => {
+          gsap.to(roleEl, {
+            yPercent: -110,
+            opacity: 0,
+            duration: 0.45,
+            ease: "power2.in",
+            onComplete: () => {
+              index = (index + 1) % roles.length;
+              roleEl.textContent = roles[index];
+              gsap.fromTo(roleEl, { yPercent: 110, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.7, ease: "expo.out" });
+            },
+          });
+        }, 2600);
+
+    // 6. Pointer: moving light and depth layers.
     const onMove = (e: PointerEvent) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const r = el.getBoundingClientRect();
-        if (glow) {
-          glow.style.setProperty("--x", `${e.clientX - r.left}px`);
-          glow.style.setProperty("--y", `${e.clientY - r.top}px`);
-        }
-        chars.forEach((c) => {
-          const cr = c.getBoundingClientRect();
-          const d = Math.hypot(e.clientX - (cr.left + cr.width / 2), e.clientY - (cr.top + cr.height / 2));
-          const t = Math.max(0, 1 - d / (window.innerWidth * 0.22));
-          c.style.fontVariationSettings = `"wght" ${Math.round(300 + 500 * t)}, "wdth" ${Math.round(80 + 20 * t)}`;
-        });
+      const r = el.getBoundingClientRect();
+      el.style.setProperty("--x", `${e.clientX - r.left}px`);
+      el.style.setProperty("--y", `${e.clientY - r.top}px`);
+      const nx = (e.clientX / window.innerWidth) * 2 - 1;
+      const ny = (e.clientY / window.innerHeight) * 2 - 1;
+      el.querySelectorAll<HTMLElement>("[data-depth]").forEach((d) => {
+        const k = Number(d.dataset.depth);
+        gsap.to(d, { x: nx * k, y: ny * k, duration: 1.2, ease: "power3.out", overwrite: "auto" });
       });
     };
-    const onLeave = () => chars.forEach((c) => (c.style.fontVariationSettings = ""));
-    if (fine) {
-      el.addEventListener("pointermove", onMove);
-      el.addEventListener("pointerleave", onLeave);
-    }
+    if (fine && !reduced) el.addEventListener("pointermove", onMove);
 
     return () => {
       ctx.revert();
-      cancelAnimationFrame(raf);
+      if (timer) window.clearInterval(timer);
       el.removeEventListener("pointermove", onMove);
-      el.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 
   return (
     <section
       ref={root}
-      className="on-blue relative flex min-h-[100svh] flex-col overflow-hidden bg-ultra text-paper"
+      aria-labelledby="hero-title"
+      className="on-blue relative flex min-h-[100svh] flex-col justify-between overflow-hidden bg-ultra px-5 pb-10 pt-28 text-paper md:px-10"
     >
-      {/* Soft light that follows the cursor */}
+      {/* Light that follows the cursor */}
       <div
-        data-glow
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-70"
+        className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(600px circle at var(--x, 70%) var(--y, 30%), rgba(201,198,255,0.22), transparent 60%)",
+            "radial-gradient(640px circle at var(--x, 70%) var(--y, 30%), rgba(201,198,255,0.2), transparent 60%)",
         }}
       />
 
-      {/* Top label */}
-      <div data-fade className="relative z-10 flex items-center justify-between px-5 pt-28 text-sm opacity-0 md:px-10 md:pt-32">
-        <span className="flex items-center gap-2">
-          <span className="inline-block h-2 w-2 rounded-full bg-lilac" />
-          Web Developer &amp; AI Automation
-        </span>
-        <span className="hidden md:block">Since {profile.since}</span>
+      {/* Depth shapes */}
+      <div aria-hidden data-parallax data-depth="40" className="pointer-events-none absolute -right-28 top-1/5 h-[30rem] w-[30rem]">
+        <div data-float className="h-full w-full rounded-full bg-lilac/25 blur-3xl" />
+      </div>
+      <div aria-hidden data-depth="-30" className="pointer-events-none absolute -left-24 bottom-24 h-80 w-80">
+        <div data-float className="h-full w-full rounded-full bg-paper/10 blur-2xl" />
       </div>
 
-      <div data-drift className="relative z-10 flex flex-1 flex-col justify-center px-5 md:px-10">
-        <h1 aria-label={profile.name} className="display">
-          {lines.map((line, i) => (
+      {/* Top row */}
+      <div data-fade className="relative flex items-center justify-between text-xs uppercase tracking-[0.25em] md:text-sm">
+        <span>Hello, I&apos;m {profile.name}</span>
+        <span className="hidden md:block">Working with clients since {profile.since}</span>
+      </div>
+
+      {/* Name wordmark, revealed letter by letter */}
+      <div className="relative mt-10 md:mt-16" aria-hidden>
+        <div className="display text-[clamp(3.2rem,11vw,11rem)] leading-none">
+          {nameLetters.map((ch, i) => (
+            <span key={i} className="inline-block overflow-hidden align-top">
+              <span data-letter className="inline-block whitespace-pre">{ch}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Headline and details */}
+      <div data-parallax className="relative mt-auto grid gap-12 pt-16 md:grid-cols-12 md:items-end">
+        <h1 id="hero-title" className="display md:col-span-8 text-[clamp(2.8rem,7.2vw,7.5rem)] leading-[0.95]">
+          {headlineLines.map((line, i) => (
             <span
               key={line}
-              aria-hidden
-              className={`block overflow-hidden pb-[0.06em] text-[clamp(4rem,19vw,20rem)] ${i === 1 ? "md:pl-[14vw]" : ""}`}
+              data-line
+              className={`block overflow-hidden pb-[0.04em] ${i === 2 ? "md:pl-[10vw]" : i === 1 ? "md:pl-[4vw]" : ""}`}
             >
-              {line.split("").map((ch, j) => (
-                <span key={j} data-char className="vf inline-block" style={{ fontVariationSettings: '"wght" 300, "wdth" 80' }}>
-                  {ch}
-                </span>
-              ))}
+              <span className="inline-block">{line}</span>
             </span>
           ))}
         </h1>
 
-        <div className="mt-10 grid gap-8 md:grid-cols-12 md:items-end">
-          <p
-            data-fade
-            className="translate-y-4 text-[clamp(1.6rem,3.6vw,3.5rem)] font-semibold leading-[1.05] opacity-0 md:col-span-7"
-          >
-            {profile.title}
-          </p>
-          <div data-fade className="flex translate-y-4 flex-col gap-6 opacity-0 md:col-span-5 md:items-end">
-            <p className="max-w-sm text-base leading-relaxed md:text-right md:text-lg">{profile.intro}</p>
-            <div className="flex flex-wrap gap-3">
-              <TransitionLink
-                href="/#projects"
-                className="rounded-full bg-paper px-6 py-3 font-medium text-ink transition-transform hover:-translate-y-0.5"
-              >
-                See projects
-              </TransitionLink>
-              <a
-                href={profile.contact.whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-full border border-paper/60 px-6 py-3 font-medium transition-colors hover:bg-paper hover:text-ink"
-              >
-                Start a conversation
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Services ticker */}
-      <div data-ticker className="relative z-10 overflow-hidden border-y border-paper/25 py-4">
-        <div data-track className="flex w-max gap-10 whitespace-nowrap text-lg font-medium uppercase tracking-wide">
-          {[...ticker, ...ticker].map((t, i) => (
-            <span key={i} className="flex items-center gap-10">
-              {t}
-              <span aria-hidden className="inline-block h-1.5 w-1.5 rounded-full bg-lilac" />
+        <div className="flex flex-col gap-8 md:col-span-4">
+          <p data-fade className="flex items-center gap-3 text-lg font-medium">
+            <span aria-hidden className="h-px w-8 bg-paper/60" />
+            <span className="overflow-hidden">
+              <span data-role className="inline-block">{roles[0]}</span>
             </span>
-          ))}
+          </p>
+
+          <p data-fade className="max-w-md text-base leading-relaxed md:text-lg">
+            I combine creative development, intelligent technology, and innovative thinking to build exceptional websites,
+            powerful e-commerce experiences, and AI-driven solutions.
+          </p>
+
+          <div data-fade className="flex flex-wrap gap-4">
+            <a
+              href="#projects"
+              data-magnetic
+              className="group inline-flex items-center gap-3 rounded-full bg-paper px-7 py-4 font-medium text-ink"
+            >
+              Explore My Work
+              <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+            </a>
+            <a
+              href="#contact"
+              data-magnetic
+              className="group inline-flex items-center gap-3 rounded-full border border-paper/60 px-7 py-4 font-medium transition-colors hover:bg-paper hover:text-ink"
+            >
+              Let&apos;s Work Together
+              <span aria-hidden className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5">↗</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>
