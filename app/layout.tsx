@@ -47,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <FloatingWhatsApp />
         <main id="main">{children}</main>
         <Curtain />
+        <Analytics />
       </body>
     </html>
   );
