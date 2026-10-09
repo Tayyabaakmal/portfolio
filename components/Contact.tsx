@@ -20,8 +20,7 @@ export default function Contact() {
         </h2>
         <a
           href={`mailto:${c.email}`}
-          className="link-wipe mt-10 inline-block break-all text-[clamp(1.5rem,4vw,3.5rem)] font-medium"
-        >
+          className="link-wipe mt-10 inline-block break-all text-[clamp(1.2rem,2.4vw,2rem)] font-medium">
           {c.email}
         </a>
       </div>
