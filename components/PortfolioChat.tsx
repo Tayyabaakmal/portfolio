@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { projects } from "@/data/projects";
 import { profile } from "@/data/profile";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -20,8 +19,6 @@ export default function PortfolioChat() {
   const [error, setError] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
-  const assistantText = messages.filter(message => message.role === "assistant").map(message => message.content).join(" ").toLowerCase();
-  const recommended = projects.filter(project => assistantText.includes(project.name.toLowerCase())).slice(0, 3);
   const brief = messages.map(message => `${message.role === "user" ? "Client" : "Assistant"}: ${message.content}`).join("\n\n");
   const emailLink = `mailto:${profile.contact.email}?subject=${encodeURIComponent("Project inquiry from your portfolio")}&body=${encodeURIComponent(brief.slice(-6000))}`;
   async function copyBrief() { try { await navigator.clipboard.writeText(brief); setCopied(true); } catch { setError("Copy is unavailable. You can select the conversation text or use Email project details."); } }
@@ -74,8 +71,6 @@ export default function PortfolioChat() {
         <div role="log" aria-live="polite" aria-relevant="additions text" className="space-y-3">{messages.map((message, index) => <div key={index} className={`rounded-xl px-4 py-4 text-sm ${message.role === "user" ? "ml-6 bg-ink text-paper" : "mr-3 bg-white"}`}><span className="mb-1 block text-xs font-semibold">{message.role === "user" ? "You" : "Project assistant"}</span><p className="whitespace-pre-wrap break-words leading-relaxed">{message.content}</p></div>)}</div>
         {busy && <p role="status" className="mt-3 text-sm">Preparing your answer…</p>}
         {error && <p role="alert" className="mt-3 rounded border border-ink/30 p-3 text-sm">{error}</p>}
-        {!busy && messages.length > 1 && <div aria-label="Suggested next steps" className="mt-4 flex flex-wrap gap-2">{["Recommend the best approach", "What information do you need?", "Create a project brief"].map(action => <button key={action} type="button" onClick={() => send(action === "Create a project brief" ? "Create a concise project brief from the details I have confirmed. List unanswered questions separately." : action)} className="rounded-full border border-ink/25 bg-white px-3 py-2 text-xs font-medium hover:border-ultra focus-visible:outline focus-visible:outline-2 focus-visible:outline-ultra">{action} ↗</button>)}</div>}
-        {!busy && recommended.length > 0 && <nav aria-label="Recommended portfolio projects" className="mt-5 border-t border-ink/15 pt-4"><p className="mb-2 text-xs font-semibold uppercase tracking-wider">Explore this work</p>{recommended.map(project => <a key={project.slug} href={`/projects/${project.slug}`} className="mb-2 flex items-center justify-between rounded-lg border border-ink/20 bg-white p-3 text-sm hover:border-ultra"><span><span className="block font-semibold">{project.name}</span><span className="text-xs">{project.category}</span></span><span aria-hidden="true">↗</span></a>)}</nav>}
         <div ref={end} />
       </div>
       <footer className="border-t border-ink/15 p-4">
