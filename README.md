@@ -63,7 +63,7 @@ A responsive chat widget appears above the WhatsApp button on every page. It ans
 
 1. Create a Gemini API key at https://aistudio.google.com/apikey. Select a Free Tier project and leave billing disabled for free API usage. Free quotas vary by model/project and are shown in AI Studio.
 2. Locally, copy `.env.example` to `.env.local` and set `GEMINI_API_KEY`.
-3. In Vercel **Project → Settings → Environment Variables**, add `GEMINI_API_KEY` for Preview and Production. Optionally set `GEMINI_MODEL` (default: `gemini-2.5-flash-lite`). Never use a `NEXT_PUBLIC_` name for the key.
+3. In Vercel **Project → Settings → Environment Variables**, add `GEMINI_API_KEY` for Preview and Production. Optionally set `GEMINI_MODEL` (default: `gemini-3.5-flash-lite`). Never use a `NEXT_PUBLIC_` name for the key.
 4. Redeploy after changing environment variables. Test the preview before merging.
 5. Ask about services, a relevant project, and an estimate. Confirm the assistant does not invent prices or availability. Test mobile, keyboard, and the contact links.
 
