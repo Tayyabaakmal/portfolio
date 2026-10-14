@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ChatContactForm from "@/components/ChatContactForm";
 import { profile } from "@/data/profile";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -56,7 +57,7 @@ export default function PortfolioChat() {
     {open && <section ref={panel} id="portfolio-chat" role="dialog" aria-label="Tayyaba's AI portfolio assistant" onKeyDown={event => {
       if (event.key === "Escape") { event.preventDefault(); close(); }
       if (event.key === "Tab") {
-        const elements = panel.current?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], textarea');
+        const elements = panel.current?.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], textarea, input:not([type=hidden]), select');
         const first = elements?.[0], last = elements?.[elements.length - 1];
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
         if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
@@ -71,6 +72,7 @@ export default function PortfolioChat() {
         <div role="log" aria-live="polite" aria-relevant="additions text" className="space-y-3">{messages.map((message, index) => <div key={index} className={`rounded-xl px-4 py-4 text-sm ${message.role === "user" ? "ml-6 bg-ink text-paper" : "mr-3 bg-white"}`}><span className="mb-1 block text-xs font-semibold">{message.role === "user" ? "You" : "Project assistant"}</span><p className="whitespace-pre-wrap break-words leading-relaxed">{message.content}</p></div>)}</div>
         {busy && <p role="status" className="mt-3 text-sm">Preparing your answer…</p>}
         {error && <p role="alert" className="mt-3 rounded border border-ink/30 p-3 text-sm">{error}</p>}
+        <ChatContactForm />
         <div ref={end} />
       </div>
       <footer className="border-t border-ink/15 p-4">
