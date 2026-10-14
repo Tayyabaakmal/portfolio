@@ -70,7 +70,7 @@ export default function PortfolioChat() {
           <textarea ref={input} id="chat-message" value={draft} onChange={event => setDraft(event.target.value)} maxLength={2000} rows={2} placeholder="Tell me about your project…" className="w-full resize-none rounded border border-ink/30 bg-white p-3 text-base focus:outline focus:outline-2 focus:outline-ultra" />
           <div className="mt-2 flex justify-between gap-2"><button type="button" disabled={busy || !messages.length} onClick={() => { setMessages([]); setError(""); setDraft(""); input.current?.focus(); }} className="px-2 text-sm underline disabled:opacity-40">New chat</button><button disabled={busy || !draft.trim()} className="rounded bg-ultra px-5 py-3 text-sm font-medium text-white disabled:opacity-50">{busy ? "Sending…" : "Send"}</button></div>
         </form>
-        <p className="mt-3 text-xs leading-relaxed">AI can make mistakes. Messages are sent to OpenAI. Please don’t share sensitive details.</p>
+        <p className="mt-3 text-xs leading-relaxed">AI can make mistakes. Messages are sent to Google Gemini and may be used to improve Google products. Please don’t share sensitive details.</p>
         <div className="mt-2 flex gap-4 text-sm underline"><a href={`mailto:${profile.contact.email}`}>Email Tayyaba</a><a href={profile.contact.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></div>
       </footer>
     </section>}

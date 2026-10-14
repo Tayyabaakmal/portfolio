@@ -61,9 +61,9 @@ A responsive chat widget appears above the WhatsApp button on every page. It ans
 
 ### Enable real AI replies
 
-1. Create an OpenAI API project with billing and a project API key. API usage is billed separately from ChatGPT subscriptions.
-2. Locally, copy `.env.example` to `.env.local` and set `OPENAI_API_KEY`.
-3. In Vercel **Project → Settings → Environment Variables**, add `OPENAI_API_KEY` for Preview and Production. Optionally set `OPENAI_MODEL` (default: `gpt-4.1-mini`). Never use a `NEXT_PUBLIC_` name for the key.
+1. Create a Gemini API key at https://aistudio.google.com/apikey. Select a Free Tier project and leave billing disabled for free API usage. Free quotas vary by model/project and are shown in AI Studio.
+2. Locally, copy `.env.example` to `.env.local` and set `GEMINI_API_KEY`.
+3. In Vercel **Project → Settings → Environment Variables**, add `GEMINI_API_KEY` for Preview and Production. Optionally set `GEMINI_MODEL` (default: `gemini-2.5-flash-lite`). Never use a `NEXT_PUBLIC_` name for the key.
 4. Redeploy after changing environment variables. Test the preview before merging.
 5. Ask about services, a relevant project, and an estimate. Confirm the assistant does not invent prices or availability. Test mobile, keyboard, and the contact links.
 
@@ -72,10 +72,10 @@ Without a key the widget shows a clear unavailable message and direct contact li
 ### Architecture and limits
 
 - `components/PortfolioChat.tsx`: accessible chat panel, bounded conversation history, loading/error states, retry by resending, new chat, and no persistent browser transcript.
-- `app/api/chat/route.ts`: server-only Responses API integration; public knowledge from `data/profile.ts` and `data/projects.ts`; no additional package dependencies.
+- `app/api/chat/route.ts`: server-only Gemini generateContent integration; public knowledge from `data/profile.ts` and `data/projects.ts`; no additional package dependencies.
 - Validates message roles, length, request size, content type and origin; caps reply tokens; aborts slow requests; suppresses provider error details.
-- Replies are rendered as plain text, never injected HTML. The API uses `store: false`; provider retention policies still apply. The application does not save chat transcripts.
-- The in-memory eight-requests-per-minute limit is **per instance** and resets on cold starts. It is not distributed abuse protection. Before public traffic, configure Vercel Firewall rate limits for `/api/chat` and provider project usage controls. Origin checks alone do not prevent scripted requests.
+- Replies are rendered as plain text, never injected HTML. Google may use free-tier prompts and responses to improve its products; do not submit sensitive information. The application does not save chat transcripts.
+- The in-memory eight-requests-per-minute limit is **per instance** and resets on cold starts. It is not distributed abuse protection. Before public traffic, configure Vercel Firewall rate limits for `/api/chat` and review Gemini project quotas. Origin checks alone do not prevent scripted requests.
 - Prompt instructions limit the assistant to portfolio facts, but cannot guarantee factual accuracy. The user-facing notice and direct human contact links remain available.
 
 Validate with `npm run test:chat`, `npm run typecheck` and `npm run build`. The chat tests mock the provider and cover validation, missing configuration, upstream errors and throttling. Test the configured provider after adding a key; a successful build does not prove API credentials or billing are valid.
