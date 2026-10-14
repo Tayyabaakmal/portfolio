@@ -79,3 +79,10 @@ Without a key the widget shows a clear unavailable message and direct contact li
 - Prompt instructions limit the assistant to portfolio facts, but cannot guarantee factual accuracy. The user-facing notice and direct human contact links remain available.
 
 Validate with `npm run test:chat`, `npm run typecheck` and `npm run build`. The chat tests mock the provider and cover validation, missing configuration, upstream errors and throttling. Test the configured provider after adding a key; a successful build does not prove API credentials or billing are valid.
+
+
+## Contact inquiries inside chat
+
+Visitors can open **Leave your contact details** and supply their name, project details, and either an email address or phone number. The form requires consent and submits to the approved FormSubmit service, which routes notifications to `tkcreators01@gmail.com`. Chat transcripts are not included. Submission opens a separate tab for FormSubmit verification and confirmation; the chat does not claim delivery before that step.
+
+Before launch, submit one test inquiry on the latest Vercel preview and confirm the FormSubmit activation email in `tkcreators01@gmail.com` (check spam). After activation, send another test and verify delivery. Receipt has not yet been tested. FormSubmit's default CAPTCHA remains enabled. No application database or lead dashboard is provided by this integration.
