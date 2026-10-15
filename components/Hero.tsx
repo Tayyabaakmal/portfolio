@@ -75,7 +75,7 @@ export default function Hero() {
   return (
     <section
       ref={root}
-      className="on-blue relative flex min-h-[100svh] flex-col overflow-hidden bg-ultra text-paper"
+      className="hero-section on-blue relative flex min-h-[100svh] flex-col overflow-hidden bg-ultra text-paper"
     >
       {/* Soft light that follows the cursor */}
       <div
@@ -89,7 +89,7 @@ export default function Hero() {
       />
 
       {/* Top label */}
-      <div data-fade className="relative z-10 flex items-center justify-between px-5 pt-28 text-sm opacity-0 md:px-10 md:pt-32">
+      <div data-fade className="hero-label relative z-10 flex items-center justify-between px-5 pt-28 text-sm opacity-0 md:px-10 md:pt-32">
         <span className="flex items-center gap-2">
           <span className="inline-block h-2 w-2 rounded-full bg-lilac" />
           Web Developer &amp; AI Automation
@@ -97,7 +97,7 @@ export default function Hero() {
         <span className="hidden md:block">Since {profile.since}</span>
       </div>
 
-      <div data-drift className="relative z-10 flex flex-1 flex-col justify-center px-5 md:px-10">
+      <div data-drift className="hero-content relative z-10 flex flex-1 flex-col justify-center px-5 md:px-10">
         <h1 aria-label={profile.name} className="display">
           {lines.map((line, i) => (
             <span
@@ -114,7 +114,7 @@ export default function Hero() {
           ))}
         </h1>
 
-        <div className="mt-10 grid gap-8 md:grid-cols-12 md:items-end">
+        <div className="hero-details mt-10 grid gap-8 md:grid-cols-12 md:items-end">
           <p
             data-fade
             className="translate-y-4 text-[clamp(1.6rem,3.6vw,3.5rem)] font-semibold leading-[1.05] opacity-0 md:col-span-7"
@@ -123,7 +123,7 @@ export default function Hero() {
           </p>
           <div data-fade className="flex translate-y-4 flex-col gap-6 opacity-0 md:col-span-5 md:items-end">
             <p className="max-w-sm text-base leading-relaxed md:text-right md:text-lg">{profile.intro}</p>
-            <div className="flex flex-wrap gap-3">
+            <div className="hero-actions flex flex-wrap gap-3">
               <TransitionLink
                 href="/#projects"
                 className="rounded-full bg-paper px-6 py-3 font-medium text-ink transition-transform hover:-translate-y-0.5"
