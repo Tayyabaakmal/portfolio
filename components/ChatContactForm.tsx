@@ -60,6 +60,6 @@ export default function ChatContactForm({ openRequest, onSubmitted }: Props) {
       {error && <p role="alert" className="text-sm leading-relaxed">{error}</p>}
       <button disabled={busy} className="w-full rounded-lg bg-ultra px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">{busy ? "Submitting…" : "Request human follow-up"}</button>
     </form>}
-    {sent && <p role="status" className="mt-2 text-xs">Thank you! Your request has been submitted to Tayyaba for follow-up.</p>}
+    {sent && <p role="status" className="mt-2 text-xs">Thanks! Your request has been submitted. Tayyaba will get back to you within 24 hours.</p>}
   </div>;
 }
