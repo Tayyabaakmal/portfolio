@@ -19,10 +19,7 @@ export default function ChatContactForm({ openRequest, onSubmitted, files, conve
   const firstField = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const sending = useRef(false);
-  const attachments = useRef<(HTMLInputElement | null)[]>([]);
-  useEffect(() => {
-    files.forEach((file, index) => { const transfer = new DataTransfer(); transfer.items.add(file); const input = attachments.current[index]; if (input) input.files = transfer.files; });
-  }, [files, open]);
+
   useEffect(() => {
     const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const localeCountry = navigator.language.split("-").pop()?.toUpperCase() as CountryCode;
@@ -32,24 +29,27 @@ export default function ChatContactForm({ openRequest, onSubmitted, files, conve
   useEffect(() => { if (open) { firstField.current?.focus(); formRef.current?.scrollIntoView({ block: "nearest" }); } }, [open, openRequest]);
   const field = "mt-1 w-full rounded-lg border border-ink/25 bg-white px-3 py-2.5 text-base focus:outline focus:outline-2 focus:outline-ultra";
   return <div className="mt-4 border-t border-ink/15 pt-3">
-    {open && <form ref={formRef} id="chat-contact-form" action="https://formsubmit.co/tkcreators01@gmail.com" method="POST" encType="multipart/form-data" target="_blank" className="mt-3 space-y-3" onSubmit={async event => {
-      if (sending.current) { event.preventDefault(); return; }
+    {open && <form ref={formRef} id="chat-contact-form" className="mt-3 space-y-3" onSubmit={async event => {
+      event.preventDefault();
+      if (sending.current) return;
       if (!email.trim() && !phone.trim()) { event.preventDefault(); setError("Please leave your email or phone number."); return; }
       const parsed = phone.trim() ? parsePhoneNumberFromString(phone.trim(), country) : undefined;
       if (phone.trim() && !parsed?.isPossible()) { event.preventDefault(); setError("Please check your phone number and country code."); return; }
       const values = new FormData(event.currentTarget);
       const message = String(values.get("message") || "").trim();
-      if (files.length > 0) { setError("Complete verification in the new tab. Submission is not confirmed here until the service confirms it there."); return; }
-      event.preventDefault();
+      if (files.length > 3 || files.reduce((size, file) => size + file.size, 0) > 9 * 1024 * 1024) { setError("Please keep attachments below 9 MB in total (up to 3 files)."); return; }
+      values.set("email", email.trim()); values.set("phone", parsed?.number || ""); values.set("message", message || "Please contact me about my project.");
+      files.forEach((file, index) => values.append(`attachment${index + 1}`, file));
       sending.current = true; setBusy(true); setError("");
       try {
         const response = await fetch("https://formsubmit.co/ajax/tkcreators01@gmail.com", {
-          method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, signal: AbortSignal.timeout(20000),
-          body: JSON.stringify({ email: email.trim(), phone: parsed?.number || "", message: message || "Please contact me about my project.", conversation: conversation.slice(-12000), contact_permission: "Visitor consented to follow-up about this inquiry", _subject: "Portfolio request for human follow-up", _template: "table" }),
+          method: "POST", headers: { Accept: "application/json" }, signal: AbortSignal.timeout(30000), body: values,
         });
-        const result = await response.json();
-        if (!response.ok || ![true, "true"].includes(result.success)) throw new Error("We could not submit your request. Please try again or use the direct contact links.");
-        if (/activat|confirm.*email|check.*email|verify.*email/i.test(String(result.message || ""))) throw new Error("Email delivery is awaiting activation by Tayyaba. Please use the direct email or WhatsApp link for now.");
+        let result: { success?: boolean | string; message?: string };
+        try { result = await response.json(); } catch { throw new Error(response.status === 403 ? "The submission service blocked this request. Your details and files have not been sent. Please use the email or WhatsApp link below." : "The submission service returned an unexpected response. Please try again later."); }
+        const detail = String(result.message || "");
+        if (/activat|confirm.*email|check.*email|verify.*email/i.test(detail)) throw new Error("The receiving email has not been activated yet. Tayyaba needs to confirm the FormSubmit activation email before this form can deliver inquiries.");
+        if (!response.ok || !(result.success === true || result.success === "true")) throw new Error(response.status === 429 ? "The submission service is busy. Please try again later." : "The submission service did not accept this inquiry. Your details and files remain here. You can contact Tayyaba directly below.");
         setSent(true); setOpen(false); setEmail(""); setPhone(""); onSubmitted();
       } catch (failure) { setError(failure instanceof Error && failure.name !== "TimeoutError" ? failure.message : "The request timed out. Please try again."); }
       finally { sending.current = false; setBusy(false); }
@@ -59,7 +59,6 @@ export default function ChatContactForm({ openRequest, onSubmitted, files, conve
       <input type="hidden" name="_template" value="table" />
       <input type="hidden" name="phone" value={phone.trim() ? parsePhoneNumberFromString(phone.trim(), country)?.number || phone : ""} />
       <input type="hidden" name="conversation" value={conversation.slice(-12000)} />
-      {files.map((file, index) => <input key={`${file.name}-${index}`} ref={element => { attachments.current[index] = element; }} type="file" name={`attachment${index + 1}`} className="hidden" tabIndex={-1} />)}
       <details className="rounded-lg border border-ink/20 p-3 text-xs"><summary className="cursor-pointer font-medium">Review conversation & attachments ({files.length})</summary><p className="mt-2 whitespace-pre-wrap break-words leading-relaxed">{conversation.slice(-12000) || "No conversation messages."}</p>{files.map((file, index) => <p key={index} className="mt-2">{file.name}</p>)}</details>
       <label htmlFor="lead-email" className="block text-xs font-semibold">Email<input ref={firstField} id="lead-email" name="email" type="email" autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} maxLength={254} placeholder="you@example.com" className={field} /></label>
       <fieldset><legend className="text-xs font-semibold">Phone / WhatsApp</legend><div className="mt-1 flex overflow-hidden rounded-lg border border-ink/25 bg-white focus-within:outline focus-within:outline-2 focus-within:outline-ultra">
@@ -68,7 +67,7 @@ export default function ChatContactForm({ openRequest, onSubmitted, files, conve
       </div></fieldset>
       <label htmlFor="lead-message" className="block text-xs font-semibold">Message (optional)<textarea id="lead-message" name="message" maxLength={2000} rows={2} placeholder="Anything you’d like Tayyaba to know?" className={field} /></label>
       <label className="flex items-start gap-2 text-xs leading-relaxed"><input type="checkbox" name="contact_permission" value="Visitor consents to sharing contact details, conversation and files for follow-up" required className="mt-1" /><span>I agree to share my contact details, the conversation shown above, and selected files with Tayyaba via FormSubmit for follow-up.</span></label>
-      {error && <p role="alert" className="text-sm leading-relaxed">{error}</p>}
+      {error && <div role="alert" className="text-sm leading-relaxed"><p>{error}</p><div className="mt-2 flex gap-3 underline"><a href="mailto:tkcreators01@gmail.com">Email Tayyaba</a><a href="https://wa.me/923016812329" target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></div></div>}
       <button disabled={busy} className="w-full rounded-lg bg-ultra px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">{busy ? "Submitting…" : files.length ? "Send inquiry & files ↗" : "Request human follow-up"}</button>
     </form>}
     {sent && <p role="status" className="mt-2 text-xs">Thanks! Your request has been submitted. Tayyaba will get back to you within 24 hours.</p>}
