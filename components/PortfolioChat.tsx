@@ -77,18 +77,18 @@ export default function PortfolioChat() {
         <div role="log" aria-live="polite" aria-relevant="additions text" className="space-y-3">{messages.map((message, index) => <div key={index} className={`rounded-xl px-4 py-4 text-sm ${message.role === "user" ? "ml-6 bg-ink text-paper" : "mr-3 bg-white"}`}><span className="mb-1 block text-xs font-semibold">{message.role === "user" ? "You" : "Project assistant"}</span><p className="whitespace-pre-wrap break-words leading-relaxed">{message.content}</p></div>)}</div>
         {busy && <p role="status" className="mt-3 text-sm">Preparing your answer…</p>}
         {error && <p role="alert" className="mt-3 rounded border border-ink/30 p-3 text-sm">{error}</p>}
-        <ChatContactForm openRequest={contactRequest} onSubmitted={() => setMessages(previous => {
+        {contactRequest > 0 && <ChatContactForm openRequest={contactRequest} onSubmitted={() => { setContactRequest(0); setMessages(previous => {
           if (!previous.length) return previous;
           const confirmation: Message = { role: "assistant", content: "Thanks! Your request has been submitted. Tayyaba will get back to you within 24 hours." };
           return previous.at(-1)?.role === "assistant" ? [...previous.slice(0, -1), confirmation] : [...previous, confirmation];
-        })} />
+        }); }} />}
         <div ref={end} />
       </div>
       <footer className="border-t border-ink/15 p-4">
         <form onSubmit={event => { event.preventDefault(); send(draft); }}>
           <label htmlFor="chat-message" className="sr-only">Your question</label>
           <textarea ref={input} id="chat-message" value={draft} onChange={event => setDraft(event.target.value)} maxLength={2000} rows={2} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); send(draft); } }} placeholder="Tell me about your project…" className="w-full resize-none rounded border border-ink/30 bg-white p-3 text-base focus:outline focus:outline-2 focus:outline-ultra" />
-          <div className="mt-2 flex justify-between gap-2"><button type="button" disabled={busy || !messages.length} onClick={() => { setMessages([]); setError(""); setDraft(""); setCopied(false); input.current?.focus(); }} className="px-2 text-sm underline disabled:opacity-40">New chat</button><button disabled={busy || !draft.trim()} className="rounded bg-ultra px-5 py-3 text-sm font-medium text-white disabled:opacity-50">{busy ? "Sending…" : "Send"}</button></div>
+          <div className="mt-2 flex justify-between gap-2"><button type="button" disabled={busy || !messages.length} onClick={() => { setMessages([]); setError(""); setDraft(""); setCopied(false); setContactRequest(0); input.current?.focus(); }} className="px-2 text-sm underline disabled:opacity-40">New chat</button><button disabled={busy || !draft.trim()} className="rounded bg-ultra px-5 py-3 text-sm font-medium text-white disabled:opacity-50">{busy ? "Sending…" : "Send"}</button></div>
         </form>
         {messages.length > 1 && <div className="mt-3 flex flex-wrap gap-3 text-xs"><button type="button" disabled={busy} onClick={() => send("Summarize my project requirements so far as a concise English project brief. Include only details I have supplied, list open questions, and do not invent a budget or deadline.")} className="underline disabled:opacity-40">Create project brief</button><button type="button" onClick={copyBrief} className="underline">{copied ? "Conversation copied" : "Copy conversation"}</button><a href={emailLink} className="underline">Email project details</a></div>}
         <div className="mt-2 flex flex-wrap gap-4 text-sm underline"><a href={profile.contact.calendly} target="_blank" rel="noopener noreferrer">Book a call ↗</a><a href={`mailto:${profile.contact.email}`}>Email Tayyaba</a><a href={profile.contact.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></div>
