@@ -39,7 +39,7 @@ export default function PortfolioChat() {
     const content = value.trim();
     if (!content || sending.current) return;
     if (/\b(human|real person|live agent|speak to someone|talk to someone|talk to tayyaba|speak to tayyaba|contact tayyaba|contact a person)\b/i.test(content)) {
-      setMessages(previous => [...previous, { role: "user", content }, { role: "assistant", content: "Of course! Please leave your email or phone number below so Tayyaba can follow up with you directly." }]);
+      setMessages(previous => [...previous, { role: "user", content }, { role: "assistant", content: "Sure! Leave your email or phone number below, and Tayyaba will get back to you within 24 hours." }]);
       setDraft(""); setError(""); setContactRequest(previous => previous + 1); return;
     }
     const history: Message[] = [...messages, { role: "user", content }];
@@ -73,13 +73,13 @@ export default function PortfolioChat() {
         <div className="flex"><button type="button" onClick={() => setExpanded(!expanded)} aria-label={expanded ? "Compact chat" : "Expand chat"} className="hidden h-11 w-11 rounded hover:bg-paper/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper sm:block">{expanded ? "↙" : "↗"}</button><button type="button" onClick={close} aria-label="Close assistant" className="h-11 w-11 rounded hover:bg-paper/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper">✕</button></div>
       </header>
       <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
-        {!messages.length && <div><p className="mb-2 text-xs font-medium uppercase tracking-widest text-ultra">Your next project starts here</p><p className="font-display text-3xl leading-tight">What would you<br />like to build?</p><p className="mb-5 mt-3 text-sm leading-relaxed">Explore services, find relevant work, or shape your project requirements. I’ll help you prepare for a conversation with Tayyaba.</p><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{suggestions.map(question => <button key={question.title} disabled={busy} onClick={() => send(question.prompt)} className="rounded-xl border border-ink/20 bg-white p-4 text-left transition-colors hover:border-ultra hover:bg-lilac/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ultra"><span className="block text-sm font-semibold">{question.title} ↗</span><span className="mt-1 block text-xs leading-relaxed">{question.detail}</span></button>)}</div></div>}
+        {!messages.length && <div><p className="mb-2 text-xs font-medium uppercase tracking-widest text-ultra">Your next project starts here</p><p className="font-display text-3xl leading-tight">What would you<br />like to build?</p><p className="mb-5 mt-3 text-sm leading-relaxed">Hi! What are you looking to build or improve?</p><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{suggestions.map(question => <button key={question.title} disabled={busy} onClick={() => send(question.prompt)} className="rounded-xl border border-ink/20 bg-white p-4 text-left transition-colors hover:border-ultra hover:bg-lilac/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ultra"><span className="block text-sm font-semibold">{question.title} ↗</span><span className="mt-1 block text-xs leading-relaxed">{question.detail}</span></button>)}</div></div>}
         <div role="log" aria-live="polite" aria-relevant="additions text" className="space-y-3">{messages.map((message, index) => <div key={index} className={`rounded-xl px-4 py-4 text-sm ${message.role === "user" ? "ml-6 bg-ink text-paper" : "mr-3 bg-white"}`}><span className="mb-1 block text-xs font-semibold">{message.role === "user" ? "You" : "Project assistant"}</span><p className="whitespace-pre-wrap break-words leading-relaxed">{message.content}</p></div>)}</div>
         {busy && <p role="status" className="mt-3 text-sm">Preparing your answer…</p>}
         {error && <p role="alert" className="mt-3 rounded border border-ink/30 p-3 text-sm">{error}</p>}
         <ChatContactForm openRequest={contactRequest} onSubmitted={() => setMessages(previous => {
           if (!previous.length) return previous;
-          const confirmation: Message = { role: "assistant", content: "Thank you! Your request has been submitted to Tayyaba for follow-up." };
+          const confirmation: Message = { role: "assistant", content: "Thanks! Your request has been submitted. Tayyaba will get back to you within 24 hours." };
           return previous.at(-1)?.role === "assistant" ? [...previous.slice(0, -1), confirmation] : [...previous, confirmation];
         })} />
         <div ref={end} />
