@@ -1,26 +1,63 @@
 import { profile } from "@/data/profile";
-
+const process = [
+  {
+    title: "Understand the business",
+    text: "We talk through your goals, your customers and what the website or system needs to do.",
+  },
+  {
+    title: "Design with a purpose",
+    text: "I shape the structure and visual direction, with room for your feedback before development.",
+  },
+  {
+    title: "Build, test & refine",
+    text: "The design becomes a working experience, checked across screen sizes and key user journeys.",
+  },
+  {
+    title: "Launch with support",
+    text: "I help you get comfortable with the finished work and stay available for ongoing improvements.",
+  },
+];
 export default function Experience() {
   return (
-    <section id="experience" className="px-5 py-24 md:px-10 md:py-40">
-      <div className="grid gap-12 md:grid-cols-12">
-        <div className="md:col-span-5">
-          <div className="md:sticky md:top-28">
-            <h2 className="display text-[clamp(3rem,8vw,8rem)]">Experience</h2>
-            <p className="mt-6 max-w-sm text-xl">Freelance, with clients in different countries, since {profile.since}.</p>
-          </div>
-        </div>
-        <ol className="md:col-span-7">
-          {profile.experience.map((x) => (
-            <li key={x.title} className="group border-t border-ink/20 py-6 last:border-b md:py-8">
-              <h3 className="display vf text-[clamp(1.6rem,3.2vw,3rem)] [font-variation-settings:'wght'_450,'wdth'_90] transition-transform group-hover:translate-x-2 group-hover:[font-variation-settings:'wght'_750,'wdth'_100]">
-                {x.title}
-              </h3>
-              <p className="mt-2 max-w-md text-lg">{x.body}</p>
-            </li>
-          ))}
-        </ol>
+    <section
+      id="experience"
+      className="section-wrap experience-section"
+      aria-labelledby="experience-heading"
+    >
+      <div className="section-heading">
+        <h2 id="experience-heading">
+          A clear process.
+          <br />A better partnership.
+        </h2>
+        <p>
+          Independent development for international clients since{" "}
+          {profile.since}. Here’s what working together looks like.
+        </p>
       </div>
+      <ol className="process-grid">
+        {process.map((item, index) => (
+          <li key={item.title}>
+            <span className="process-number" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <h3>{item.title}</h3>
+            <p>{item.text}</p>
+          </li>
+        ))}
+      </ol>
+      <details className="experience-details">
+        <summary>
+          More about my experience <span aria-hidden="true">+</span>
+        </summary>
+        <div>
+          {profile.experience.map((item) => (
+            <div key={item.title}>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </div>
+          ))}
+        </div>
+      </details>
     </section>
   );
 }

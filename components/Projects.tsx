@@ -1,74 +1,122 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
+import { useState } from "react";
 import TransitionLink from "./TransitionLink";
 import Cover from "./Cover";
+import Reveal from "./Reveal";
 import type { Project } from "@/data/projects";
 
 type Props = { projects: Project[]; covers: Record<string, string | null> };
-
+const featuredSlugs = [
+  "mediamovez",
+  "mediolie",
+  "poseidon-offshore-energy",
+  "usports-nation",
+];
+const filters = ["All work", "Business websites", "Online stores"] as const;
 export default function Projects({ projects, covers }: Props) {
-  const [active, setActive] = useState(0);
-  const preview = useRef<HTMLDivElement>(null);
-  const list = useRef<HTMLUListElement>(null);
-
-  useEffect(() => {
-    const node = preview.current!;
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-    gsap.set(node, { xPercent: -50, yPercent: -50, scale: 0.8, opacity: 0 });
-    const x = gsap.quickTo(node, "x", { duration: 0.6, ease: "power3" });
-    const y = gsap.quickTo(node, "y", { duration: 0.6, ease: "power3" });
-    const move = (e: PointerEvent) => { x(e.clientX + 120); y(e.clientY); };
-    const enter = () => gsap.to(node, { scale: 1, opacity: 1, duration: 0.45, ease: "expo.out" });
-    const leave = () => gsap.to(node, { scale: 0.8, opacity: 0, duration: 0.35, ease: "power2.out" });
-    const ul = list.current!;
-    ul.addEventListener("pointermove", move);
-    ul.addEventListener("pointerenter", enter);
-    ul.addEventListener("pointerleave", leave);
-    return () => { ul.removeEventListener("pointermove", move); ul.removeEventListener("pointerenter", enter); ul.removeEventListener("pointerleave", leave); };
-  }, []);
-
+  const [filter, setFilter] = useState<string>("All work");
+  const featured = featuredSlugs
+    .map((slug) => projects.find((p) => p.slug === slug))
+    .filter((p): p is Project => !!p);
+  const visible = featured.filter(
+    (p) =>
+      filter === "All work" ||
+      (filter === "Online stores"
+        ? ["mediolie", "usports-nation"].includes(p.slug)
+        : !["mediolie", "usports-nation"].includes(p.slug)),
+  );
+  const more = projects.filter((p) => !featuredSlugs.includes(p.slug));
   return (
-    <section id="projects" className="px-5 py-24 md:px-10 md:py-40">
-      <h2 className="display mb-12 text-[clamp(3.5rem,14vw,13rem)] md:mb-20">Projects</h2>
-
-      <ul ref={list} className="group/list border-t border-ink/20">
-        {projects.map((p, i) => (
-          <li key={p.slug} className="border-b border-ink/20">
+    <section
+      id="projects"
+      className="section-wrap work-section"
+      aria-labelledby="work-heading"
+    >
+      <div className="section-heading">
+        <h2 id="work-heading">
+          A closer look
+          <br />
+          at my work<span className="accent">.</span>
+        </h2>
+        <p>
+          Real businesses. Different challenges. Websites designed and developed
+          with care.
+        </p>
+      </div>
+      <div
+        className="work-filters"
+        role="group"
+        aria-label="Filter featured projects"
+      >
+        {filters.map((label) => (
+          <button
+            type="button"
+            key={label}
+            aria-pressed={filter === label}
+            onClick={() => setFilter(label)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className="project-grid" aria-live="polite" aria-atomic="true">
+        {visible.map((p) => (
+          <article key={p.slug} className="project-card">
             <TransitionLink
               href={`/projects/${p.slug}`}
-              onPointerEnter={() => setActive(i)}
-              onFocus={() => setActive(i)}
-              className="group/row block py-5 transition-opacity md:py-7 md:group-hover/list:opacity-30 md:hover:!opacity-100 md:focus-visible:!opacity-100"
+              className="project-link"
+              aria-label={`View ${p.name} project`}
             >
-              <div className="flex items-baseline justify-between gap-6">
-                <span className="display vf text-[clamp(2rem,6.2vw,6rem)] [font-variation-settings:'wght'_350,'wdth'_85] group-hover/row:[font-variation-settings:'wght'_750,'wdth'_100] group-focus-visible/row:[font-variation-settings:'wght'_750,'wdth'_100]">
-                  {p.name}
+              <Reveal className={`project-image project-image-${p.slug}`}>
+                <div className="project-browser">
+                  <div className="browser-bar" aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                    <span className="browser-domain">
+                      {new URL(p.url).hostname}
+                    </span>
+                  </div>
+                  <Cover
+                    src={covers[p.slug]}
+                    name={p.name}
+                    color={p.color}
+                    aspect="aspect-[16/10]"
+                    sizes="(min-width: 1440px) 600px, (min-width: 768px) 44vw, 90vw"
+                  />
+                </div>
+              </Reveal>
+              <div className="project-caption">
+                <div>
+                  <p className="project-category">{p.category}</p>
+                  <h3>{p.name}</h3>
+                </div>
+                <span className="project-arrow" aria-hidden="true">
+                  ↗
                 </span>
-                <span className="hidden shrink-0 text-right text-base md:block">
-                  {p.category}
-                  <span className="ml-6 tabular-nums opacity-50">{String(i + 1).padStart(2, "0")}</span>
-                </span>
-              </div>
-              {/* Touch devices have no hover, so the cover sits inline. */}
-              <div className="mt-4 hidden max-w-md [@media(hover:none)]:block">
-                <Cover src={covers[p.slug]} name={p.name} color={p.color} sizes="90vw" hint={`public/projects/${p.slug}/cover.jpg`} />
-                <p className="mt-2 text-sm">{p.description ?? p.category} · View project</p>
               </div>
             </TransitionLink>
-          </li>
+            <p className="project-description">{p.description}</p>
+          </article>
         ))}
-      </ul>
-
-      <div ref={preview} aria-hidden className="pointer-events-none fixed left-0 top-0 z-30 w-[min(32vw,520px)] shadow-2xl [@media(hover:none)]:hidden">
-        <div className="relative">
-          {projects.map((p, i) => (
-            <div key={p.slug} className={`transition-opacity duration-300 ${i === active ? "relative opacity-100" : "absolute inset-0 opacity-0"}`}>
-              <Cover src={covers[p.slug]} name={p.name} color={p.color} sizes="32vw" hint={`public/projects/${p.slug}/cover.jpg`} />
-            </div>
-          ))}
-        </div>
       </div>
+      <details className="more-projects">
+        <summary>
+          Explore more projects <span>({more.length})</span>
+          <span aria-hidden="true">+</span>
+        </summary>
+        <ul>
+          {more.map((p) => (
+            <li key={p.slug}>
+              <TransitionLink href={`/projects/${p.slug}`}>
+                <span>{p.name}</span>
+                <span className="more-category">{p.category}</span>
+                <span aria-hidden="true">↗</span>
+              </TransitionLink>
+            </li>
+          ))}
+        </ul>
+      </details>
     </section>
   );
 }

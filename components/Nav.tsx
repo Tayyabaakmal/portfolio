@@ -1,9 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import TransitionLink from "./TransitionLink";
 import { profile } from "@/data/profile";
-
 const links = [
   { href: "/#projects", label: "Projects" },
   { href: "/#about", label: "About" },
@@ -11,69 +10,167 @@ const links = [
   { href: "/#experience", label: "Experience" },
   { href: "/#contact", label: "Contact" },
 ];
-
 export default function Nav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const menu = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const close = useRef<HTMLButtonElement>(null);
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    const scheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncTheme = () => {
+      try {
+        if (localStorage.getItem("portfolio-theme")) return;
+      } catch {}
+      document.documentElement.dataset.theme = scheme.matches
+        ? "dark"
+        : "light";
+    };
+    scheme.addEventListener("change", syncTheme);
+    const media = window.matchMedia("(min-width: 1100px)");
+    const resize = () => {
+      if (media.matches) setOpen(false);
+    };
+    media.addEventListener("change", resize);
+    return () => {
+      media.removeEventListener("change", resize);
+      scheme.removeEventListener("change", syncTheme);
+    };
   }, []);
-
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.__lenis?.stop();
+    close.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+      if (e.key !== "Tab") return;
+      const items =
+        menu.current?.querySelectorAll<HTMLElement>("a[href], button");
+      const first = items?.[0],
+        last = items?.[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      }
+      if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.__lenis?.start();
+      document.removeEventListener("keydown", onKey);
+      trigger.current?.focus();
+    };
+  }, [open]);
+  function toggleTheme() {
+    const theme =
+      document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem("portfolio-theme", theme);
+    } catch {}
+  }
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-5 text-white mix-blend-difference md:px-10">
-        <TransitionLink href="/" className="display text-xl" aria-label={`${profile.name}, home`}>
-          Tayyaba Akmal
-        </TransitionLink>
-        <nav aria-label="Primary" className="hidden items-center gap-8 md:flex">
-          {links.map((l) => (
-            <TransitionLink key={l.href} href={l.href} className="link-wipe text-[15px] font-medium">
-              {l.label}
-            </TransitionLink>
-          ))}
+      <header className="site-nav">
+        <div className="nav-inner section-wrap">
+          <TransitionLink
+            href="/"
+            className="wordmark"
+            aria-label={`${profile.name}, home`}
+          >
+            Tayyaba Akmal
+          </TransitionLink>
+          <nav aria-label="Primary" className="desktop-nav">
+            {links.map((l) => (
+              <TransitionLink key={l.href} href={l.href} className="nav-link">
+                {l.label}
+              </TransitionLink>
+            ))}
+            <a
+              href={profile.contact.calendly}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-call"
+            >
+              Book a call <span aria-hidden="true">↗</span>
+            </a>
+          </nav>
+          <div className="nav-actions">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="theme-toggle"
+              aria-label="Switch light or dark theme"
+              title="Switch light or dark theme"
+            >
+              <span aria-hidden="true">◐</span>
+            </button>
+            <button
+              ref={trigger}
+              type="button"
+              className="mobile-menu-trigger"
+              aria-expanded={open}
+              aria-controls="mobile-menu"
+              onClick={() => setOpen(true)}
+            >
+              Menu <span aria-hidden="true">+</span>
+            </button>
+          </div>
+        </div>
+      </header>
+      {open && (
+        <div
+          ref={menu}
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Navigation"
+          className="mobile-menu"
+          data-lenis-prevent
+        >
+          <div className="mobile-menu-top">
+            <span>Navigation</span>
+            <button
+              ref={close}
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="Close navigation"
+            >
+              Close ×
+            </button>
+          </div>
+          <nav aria-label="Mobile">
+            {links.map((l) => (
+              <TransitionLink
+                key={l.href}
+                href={l.href}
+                onClick={() => {
+                  window.__lenis?.start();
+                  setOpen(false);
+                }}
+              >
+                {l.label}
+                <span aria-hidden="true">↗</span>
+              </TransitionLink>
+            ))}
+          </nav>
           <a
             href={profile.contact.calendly}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full border border-current px-4 py-2 text-[15px] font-medium"
+            className="action action-primary"
           >
-            Book a call
+            Book a call <span aria-hidden="true">↗</span>
           </a>
-        </nav>
-        <button
-          className="text-[15px] font-medium md:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          onClick={() => setOpen((o) => !o)}
-        >
-          {open ? "Close" : "Menu"}
-        </button>
-      </header>
-      <div
-        id="mobile-menu"
-        className={`on-ink fixed inset-0 z-40 flex flex-col justify-end bg-ink px-5 pb-12 text-paper transition-[clip-path] duration-500 md:hidden ${
-          open ? "[clip-path:inset(0)]" : "pointer-events-none [clip-path:inset(0_0_100%_0)]"
-        }`}
-        aria-hidden={!open}
-        {...(!open ? { inert: "" as unknown as boolean } : {})}
-      >
-        {links.map((l) => (
-          <TransitionLink key={l.href} href={l.href} className="display py-2 text-6xl">
-            {l.label}
-          </TransitionLink>
-        ))}
-        <a
-          href={profile.contact.calendly}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="display py-2 text-6xl"
-        >
-          Book a call
-        </a>
-      </div>
+        </div>
+      )}
     </>
   );
 }

@@ -13,8 +13,8 @@ const suggestions = [
   { title: "Explore the portfolio", detail: "Find work relevant to my project", prompt: "Help me find relevant portfolio projects. Ask what kind of business I have." },
 ];
 
-export default function PortfolioChat() {
-  const [open, setOpen] = useState(false);
+export default function PortfolioChat({ initialOpen = false }: { initialOpen?: boolean }) {
+  const [open, setOpen] = useState(initialOpen);
   const [files, setFiles] = useState<File[]>([]);
   const [sharedFiles, setSharedFiles] = useState<File[]>([]);
   const [contactRequest, setContactRequest] = useState(0);
@@ -70,7 +70,7 @@ export default function PortfolioChat() {
   }
 
   return <>
-    <button ref={launcher} type="button" onClick={() => open ? close() : setOpen(true)} aria-expanded={open} aria-controls="portfolio-chat" className="fixed bottom-24 right-5 z-40 rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ultra md:bottom-28 md:right-8">Let’s plan your project <span aria-hidden="true">↗</span></button>
+    <button ref={launcher} type="button" onClick={() => open ? close() : setOpen(true)} aria-expanded={open} aria-controls="portfolio-chat" className="chat-launcher">Let’s plan your project <span aria-hidden="true">↗</span></button>
     {open && <section ref={panel} id="portfolio-chat" role="dialog" aria-label="Tayyaba's AI portfolio assistant" onKeyDown={event => {
       if (event.key === "Escape") { event.preventDefault(); close(); }
       if (event.key === "Tab") {

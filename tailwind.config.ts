@@ -3,10 +3,20 @@ const config: Config = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      colors: { paper: "#ECEDF3", ink: "#15112B", ultra: "#3A2BFF", lilac: "#C9C6FF" },
+      colors: {
+        paper: "#ECEDF3",
+        ink: "#15112B",
+        ultra: "#3A2BFF",
+        lilac: "#C9C6FF",
+      },
       fontFamily: {
-        display: ['"Bricolage Grotesque"', "ui-sans-serif", "system-ui", "sans-serif"],
-        body: ['"Instrument Sans"', "ui-sans-serif", "system-ui", "sans-serif"],
+        display: [
+          "var(--font-display)",
+          "ui-sans-serif",
+          "system-ui",
+          "sans-serif",
+        ],
+        body: ["var(--font-body)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
     },
   },

@@ -23,6 +23,44 @@ const contribution = [
 
 export const projects: Project[] = [
   {
+    slug: "mediamovez",
+    name: "MediaMovez",
+    url: "https://mediamovez.de/",
+    category: "Creative agency",
+    color: "#101321",
+    description: "A bold digital presence for a creative and media agency.",
+    overview: [
+      "A website project for MediaMovez, a creative and media agency. The design brings the agency’s services and visual work together in a distinctive, content-led experience.",
+    ],
+    approach: [
+      "Strong typography, a dark visual direction and clear sections give the agency’s work room to stand out. The layout presents the services as part of a coherent experience.",
+    ],
+    objective: [
+      "Present the agency’s capabilities clearly and make it easy for visitors to explore its work and get in touch.",
+    ],
+    contribution,
+  },
+  {
+    slug: "poseidon-offshore-energy",
+    name: "Poseidon Offshore Energy",
+    url: "https://poseidonoffshoreenergy.com/",
+    category: "Offshore engineering",
+    color: "#dce5ef",
+    description:
+      "A clear, professional website for an offshore engineering business.",
+    overview: [
+      "A business website for Poseidon Offshore Energy. The project presents its offshore engineering services through clear page structure, industry imagery and straightforward navigation.",
+    ],
+    approach: [
+      "The visual structure balances technical service information with an approachable overview of the business. Consistent layouts help visitors move between the company, its services and contact information.",
+    ],
+    objective: [
+      "Help prospective clients understand the business and its engineering services, with a clear path to contact the team.",
+    ],
+    contribution,
+  },
+
+  {
     slug: "the-public-relationship",
     name: "The Public Relationship",
     url: "https://thepublicrelationship.com/",
@@ -108,7 +146,8 @@ export const projects: Project[] = [
     url: "https://usportsnation.com/",
     category: "Sports content",
     color: "#4D3FFF",
-    description: "A website for a sports content platform.",
+    description:
+      "A sports website bringing content, merchandise and product discovery together.",
     overview: [
       "USports Nation is a sports-focused website. Sports audiences move quickly and browse on many devices, so the site has to be easy to scan and fast to use. I designed and developed the full website, organising its content so visitors can find what interests them without a lot of searching.",
       "Content-led sites live or die by how easily a reader can move from one piece to the next. The structure was planned with that movement in mind, so the site invites the visitor to keep exploring.",
@@ -188,7 +227,8 @@ export const projects: Project[] = [
     url: "https://mediolie.nl/",
     category: "Business website",
     color: "#33268F",
-    description: "A business website for an international client.",
+    description:
+      "A product-focused online store with clear categories and an easy path to checkout.",
     overview: [
       "Mediolie is a business website that I designed and developed as part of my work with international clients. The site presents the business professionally and gives visitors a clear understanding of what it offers.",
       "Working with clients across borders means the website has to make sense to visitors from different backgrounds, so the structure and language were kept direct and easy to follow.",
@@ -204,7 +244,8 @@ export const projects: Project[] = [
   },
 ];
 
-export const getProject = (slug: string) => projects.find((p) => p.slug === slug);
+export const getProject = (slug: string) =>
+  projects.find((p) => p.slug === slug);
 
 export const getNeighbours = (slug: string) => {
   const i = projects.findIndex((p) => p.slug === slug);
