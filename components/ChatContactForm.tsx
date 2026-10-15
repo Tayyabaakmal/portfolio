@@ -28,7 +28,6 @@ export default function ChatContactForm({ openRequest, onSubmitted }: Props) {
   useEffect(() => { if (open) { firstField.current?.focus(); formRef.current?.scrollIntoView({ block: "nearest" }); } }, [open, openRequest]);
   const field = "mt-1 w-full rounded-lg border border-ink/25 bg-white px-3 py-2.5 text-base focus:outline focus:outline-2 focus:outline-ultra";
   return <div className="mt-4 border-t border-ink/15 pt-3">
-    <button type="button" aria-expanded={open} aria-controls="chat-contact-form" onClick={() => setOpen(!open)} className="flex w-full items-center justify-between rounded-lg bg-ink px-4 py-3 text-sm font-semibold text-paper"><span>Contact Tayyaba</span><span aria-hidden="true">{open ? "−" : "↗"}</span></button>
     {open && <form ref={formRef} id="chat-contact-form" className="mt-3 space-y-3" onSubmit={async event => {
       event.preventDefault(); if (sending.current) return;
       if (!email.trim() && !phone.trim()) { setError("Please leave your email or phone number."); return; }
