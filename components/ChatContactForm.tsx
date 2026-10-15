@@ -56,7 +56,7 @@ export default function ChatContactForm() {
       if (contactMethod === "Email" && !email.trim()) { event.preventDefault(); setError("Enter your email address or choose phone / WhatsApp as your preferred contact method."); return; }
       if (contactMethod === "Phone / WhatsApp" && !hasPhone) { event.preventDefault(); setError("Enter your phone number or choose email as your preferred contact method."); return; }
       if (hasPhone && phone.replace(/\D/g, "").length < 7) { event.preventDefault(); setError("Please enter a valid phone number, including your country code."); return; }
-      if (hasPhone && !hasPhone.startsWith("+") && !/^\+[1-9]\d{0,3}$/.test(dialCode)) { event.preventDefault(); setError("Select or enter your country calling code."); return; }
+      if (hasPhone && !/^\+[1-9]/.test(phone.trim())) { event.preventDefault(); setError("Enter your full phone number starting with + and your country code."); return; }
       const digits = internationalPhone.replace(/\D/g, "");
       if (hasPhone && (digits.length < 8 || digits.length > 15)) { event.preventDefault(); setError("Please check your international phone number (8–15 digits including country code)."); return; }
       setError("");
