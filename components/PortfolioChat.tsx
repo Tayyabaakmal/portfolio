@@ -59,7 +59,7 @@ export default function PortfolioChat() {
     controller.current = new AbortController();
     const timeout = setTimeout(() => controller.current?.abort(), 30000);
     try {
-      const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: history.slice(-11).map(({role,content}) => ({role,content})) }), signal: controller.current.signal });
+      const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ messages: history.map(({role,content}) => ({role,content})) }), signal: controller.current.signal });
       const data = await response.json();
       if (!response.ok || typeof data.message !== "string") throw new Error(data.error || "Unable to send. Please try again.");
       setCopied(false); setMessages([...history, { role: "assistant", content: data.message }]);
