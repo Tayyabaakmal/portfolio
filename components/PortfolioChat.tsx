@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ChatMediaControls from "@/components/ChatMediaControls";
 import ChatContactForm from "@/components/ChatContactForm";
 import { profile } from "@/data/profile";
 
@@ -14,6 +15,7 @@ const suggestions = [
 
 export default function PortfolioChat() {
   const [open, setOpen] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
   const [contactRequest, setContactRequest] = useState(0);
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
@@ -38,7 +40,7 @@ export default function PortfolioChat() {
   async function send(value: string) {
     const content = value.trim();
     if (!content || sending.current) return;
-    if (/\b(human|real person|live agent|speak to someone|talk to someone|talk to tayyaba|speak to tayyaba|contact tayyaba|contact a person)\b/i.test(content)) {
+    if (/\b(human|send files|share files|send attachments|real person|live agent|speak to someone|talk to someone|talk to tayyaba|speak to tayyaba|contact tayyaba|contact a person)\b/i.test(content)) {
       setMessages(previous => [...previous, { role: "user", content }, { role: "assistant", content: "Sure! Leave your email or phone number below, and Tayyaba will get back to you within 24 hours." }]);
       setDraft(""); setError(""); setContactRequest(previous => previous + 1); return;
     }
@@ -75,9 +77,9 @@ export default function PortfolioChat() {
       <div data-lenis-prevent className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
         {!messages.length && <div><p className="mb-2 text-xs font-medium uppercase tracking-widest text-ultra">Your next project starts here</p><p className="font-display text-3xl leading-tight">What would you<br />like to build?</p><p className="mb-5 mt-3 text-sm leading-relaxed">Hi! What are you looking to build or improve?</p><div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{suggestions.map(question => <button key={question.title} disabled={busy} onClick={() => send(question.prompt)} className="rounded-xl border border-ink/20 bg-white p-4 text-left transition-colors hover:border-ultra hover:bg-lilac/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ultra"><span className="block text-sm font-semibold">{question.title} ↗</span><span className="mt-1 block text-xs leading-relaxed">{question.detail}</span></button>)}</div></div>}
         <div role="log" aria-live="polite" aria-relevant="additions text" className="space-y-3">{messages.map((message, index) => <div key={index} className={`rounded-xl px-4 py-4 text-sm ${message.role === "user" ? "ml-6 bg-ink text-paper" : "mr-3 bg-white"}`}><span className="mb-1 block text-xs font-semibold">{message.role === "user" ? "You" : "Project assistant"}</span><p className="whitespace-pre-wrap break-words leading-relaxed">{message.content}</p></div>)}</div>
-        {busy && <p role="status" className="mt-3 text-sm">Preparing your answer…</p>}
+        {busy && <p role="status" className="mt-3 text-sm"><span className="motion-safe:animate-pulse">Typing…</span></p>}
         {error && <p role="alert" className="mt-3 rounded border border-ink/30 p-3 text-sm">{error}</p>}
-        {contactRequest > 0 && <ChatContactForm openRequest={contactRequest} onSubmitted={() => { setContactRequest(0); setMessages(previous => {
+        {contactRequest > 0 && <ChatContactForm files={files} conversation={brief} openRequest={contactRequest} onSubmitted={() => { setContactRequest(0); setFiles([]); setMessages(previous => {
           if (!previous.length) return previous;
           const confirmation: Message = { role: "assistant", content: "Thanks! Your request has been submitted. Tayyaba will get back to you within 24 hours." };
           return previous.at(-1)?.role === "assistant" ? [...previous.slice(0, -1), confirmation] : [...previous, confirmation];
@@ -85,10 +87,12 @@ export default function PortfolioChat() {
         <div ref={end} />
       </div>
       <footer className="border-t border-ink/15 p-4">
+        <ChatMediaControls files={files} onFiles={setFiles} disabled={busy} lastReply={messages.filter(message => message.role === "assistant").at(-1)?.content || ""} onTranscript={text => setDraft(previous => previous ? `${previous} ${text}` : text)} />
+        {files.length > 0 && <button type="button" onClick={() => setContactRequest(previous => previous + 1)} className="mb-2 w-full rounded-lg border border-ultra px-3 py-2 text-xs font-semibold text-ultra">Review and send files to Tayyaba ↗</button>}
         <form onSubmit={event => { event.preventDefault(); send(draft); }}>
           <label htmlFor="chat-message" className="sr-only">Your question</label>
-          <textarea ref={input} id="chat-message" value={draft} onChange={event => setDraft(event.target.value)} maxLength={2000} rows={2} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); send(draft); } }} placeholder="Tell me about your project…" className="w-full resize-none rounded border border-ink/30 bg-white p-3 text-base focus:outline focus:outline-2 focus:outline-ultra" />
-          <div className="mt-2 flex justify-between gap-2"><button type="button" disabled={busy || !messages.length} onClick={() => { setMessages([]); setError(""); setDraft(""); setCopied(false); setContactRequest(0); input.current?.focus(); }} className="px-2 text-sm underline disabled:opacity-40">New chat</button><button disabled={busy || !draft.trim()} className="rounded bg-ultra px-5 py-3 text-sm font-medium text-white disabled:opacity-50">{busy ? "Sending…" : "Send"}</button></div>
+          <textarea ref={input} id="chat-message" value={draft} onChange={event => setDraft(event.target.value)} maxLength={2000} rows={1} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); send(draft); } }} placeholder="Tell me about your project…" className="w-full resize-none rounded border border-ink/30 bg-white p-3 text-base focus:outline focus:outline-2 focus:outline-ultra" />
+          <div className="mt-2 flex justify-between gap-2"><button type="button" disabled={busy || !messages.length} onClick={() => { setMessages([]); setError(""); setDraft(""); setCopied(false); setContactRequest(0); setFiles([]); input.current?.focus(); }} className="px-2 text-sm underline disabled:opacity-40">New chat</button><button aria-label="Send message" title="Send message" disabled={busy || !draft.trim()} className="rounded bg-ultra px-5 py-3 text-sm font-medium text-white disabled:opacity-50">{busy ? "…" : "Send ↗"}</button></div>
         </form>
         {messages.length > 1 && <div className="mt-3 flex flex-wrap gap-3 text-xs"><button type="button" disabled={busy} onClick={() => send("Summarize my project requirements so far as a concise English project brief. Include only details I have supplied, list open questions, and do not invent a budget or deadline.")} className="underline disabled:opacity-40">Create project brief</button><button type="button" onClick={copyBrief} className="underline">{copied ? "Conversation copied" : "Copy conversation"}</button><a href={emailLink} className="underline">Email project details</a></div>}
         <div className="mt-2 flex flex-wrap gap-4 text-sm underline"><a href={profile.contact.calendly} target="_blank" rel="noopener noreferrer">Book a call ↗</a><a href={`mailto:${profile.contact.email}`}>Email Tayyaba</a><a href={profile.contact.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp ↗</a></div>
