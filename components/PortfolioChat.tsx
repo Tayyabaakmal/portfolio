@@ -14,6 +14,7 @@ const suggestions = [
 
 export default function PortfolioChat() {
   const [open, setOpen] = useState(false);
+  const [contactRequest, setContactRequest] = useState(0);
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
@@ -37,6 +38,10 @@ export default function PortfolioChat() {
   async function send(value: string) {
     const content = value.trim();
     if (!content || sending.current) return;
+    if (/\b(human|real person|live agent|speak to someone|talk to someone|talk to tayyaba|speak to tayyaba|contact tayyaba|contact a person)\b/i.test(content)) {
+      setMessages(previous => [...previous, { role: "user", content }, { role: "assistant", content: "Of course! Please leave your email or phone number below so Tayyaba can follow up with you directly." }]);
+      setDraft(""); setError(""); setContactRequest(previous => previous + 1); return;
+    }
     const history: Message[] = [...messages, { role: "user", content }];
     sending.current = true; setBusy(true); setError(""); setDraft(""); setMessages(history);
     controller.current = new AbortController();
@@ -72,7 +77,11 @@ export default function PortfolioChat() {
         <div role="log" aria-live="polite" aria-relevant="additions text" className="space-y-3">{messages.map((message, index) => <div key={index} className={`rounded-xl px-4 py-4 text-sm ${message.role === "user" ? "ml-6 bg-ink text-paper" : "mr-3 bg-white"}`}><span className="mb-1 block text-xs font-semibold">{message.role === "user" ? "You" : "Project assistant"}</span><p className="whitespace-pre-wrap break-words leading-relaxed">{message.content}</p></div>)}</div>
         {busy && <p role="status" className="mt-3 text-sm">Preparing your answer…</p>}
         {error && <p role="alert" className="mt-3 rounded border border-ink/30 p-3 text-sm">{error}</p>}
-        <ChatContactForm />
+        <ChatContactForm openRequest={contactRequest} onSubmitted={() => setMessages(previous => {
+          if (!previous.length) return previous;
+          const confirmation: Message = { role: "assistant", content: "Thank you! Your request has been submitted to Tayyaba for follow-up." };
+          return previous.at(-1)?.role === "assistant" ? [...previous.slice(0, -1), confirmation] : [...previous, confirmation];
+        })} />
         <div ref={end} />
       </div>
       <footer className="border-t border-ink/15 p-4">
