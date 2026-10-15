@@ -37,6 +37,18 @@ export default function PortfolioChat() {
   useEffect(() => { if (open) input.current?.focus(); }, [open]);
   useEffect(() => { if (open) end.current?.scrollIntoView({ block: "nearest" }); }, [messages, busy, open]);
   useEffect(() => () => controller.current?.abort(), []);
+  useEffect(() => {
+    if (!open || !window.visualViewport) return;
+    const viewport = window.visualViewport;
+    const syncViewport = () => {
+      panel.current?.style.setProperty("--chat-viewport-height", `${viewport.height}px`);
+      panel.current?.style.setProperty("--chat-viewport-top", `${viewport.offsetTop}px`);
+    };
+    syncViewport();
+    viewport.addEventListener("resize", syncViewport);
+    viewport.addEventListener("scroll", syncViewport);
+    return () => { viewport.removeEventListener("resize", syncViewport); viewport.removeEventListener("scroll", syncViewport); };
+  }, [open]);
   function close() { setOpen(false); launcher.current?.focus(); }
   async function send(value: string) {
     const content = value.trim();
@@ -70,7 +82,7 @@ export default function PortfolioChat() {
   }
 
   return <>
-    <button ref={launcher} type="button" onClick={() => open ? close() : setOpen(true)} aria-expanded={open} aria-controls="portfolio-chat" className="fixed bottom-24 right-5 z-40 rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ultra md:bottom-28 md:right-8">Let’s plan your project <span aria-hidden="true">↗</span></button>
+    <button ref={launcher} type="button" onClick={() => open ? close() : setOpen(true)} aria-expanded={open} aria-controls="portfolio-chat" className="chat-launcher fixed bottom-24 right-5 z-40 rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ultra md:bottom-28 md:right-8">Let’s plan your project <span aria-hidden="true">↗</span></button>
     {open && <section ref={panel} id="portfolio-chat" role="dialog" aria-label="Tayyaba's AI portfolio assistant" onKeyDown={event => {
       if (event.key === "Escape") { event.preventDefault(); close(); }
       if (event.key === "Tab") {
@@ -79,7 +91,7 @@ export default function PortfolioChat() {
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
         if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
       }
-    }} className={`fixed bottom-24 right-4 z-50 flex h-[min(44rem,calc(100dvh-7rem))] w-[calc(100vw-2rem)] ${expanded ? "max-w-2xl" : "max-w-md"} flex-col overflow-hidden rounded-2xl border border-ink/20 bg-paper text-ink shadow-2xl md:bottom-28 md:right-8`}>
+    }} className={`chat-panel fixed bottom-24 right-4 z-[80] flex h-[min(44rem,calc(100dvh-7rem))] w-[calc(100vw-2rem)] ${expanded ? "max-w-2xl" : "max-w-md"} flex-col overflow-hidden rounded-2xl border border-ink/20 bg-paper text-ink shadow-2xl md:bottom-28 md:right-8`}>
       <header className="flex items-center justify-between bg-ink px-5 py-4 text-paper">
         <div className="flex items-center gap-3"><span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-xl border border-paper/30 font-display text-lg">TA</span><div><p className="font-display text-lg font-semibold">Project assistant</p><p className="text-xs text-paper/80">Tayyaba Akmal · AI assistant</p></div></div>
         <div className="flex"><button type="button" onClick={() => setExpanded(!expanded)} aria-label={expanded ? "Compact chat" : "Expand chat"} className="hidden h-11 w-11 rounded hover:bg-paper/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper sm:block">{expanded ? "↙" : "↗"}</button><button type="button" onClick={close} aria-label="Close assistant" className="h-11 w-11 rounded hover:bg-paper/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-paper">✕</button></div>
@@ -96,7 +108,7 @@ export default function PortfolioChat() {
         }); }} />}
         <div ref={end} />
       </div>
-      <footer className="border-t border-ink/15 p-4">
+      <footer className="chat-footer shrink-0 border-t border-ink/15 p-4">
         <ChatMediaControls files={files} onFiles={setFiles} disabled={busy} lastReply={messages.filter(message => message.role === "assistant").at(-1)?.content || ""} onTranscript={text => setDraft(previous => previous ? `${previous} ${text}` : text)} />
         <form className="relative" onSubmit={event => { event.preventDefault(); send(draft); }}>
           <label htmlFor="chat-message" className="sr-only">Your question</label>

@@ -12,7 +12,7 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="on-blue flex min-h-[90svh] flex-col justify-between bg-ultra px-5 py-24 text-paper md:px-10 md:py-32"
+      className="contact-section on-blue flex min-h-[90svh] flex-col justify-between bg-ultra px-5 py-24 text-paper md:px-10 md:py-32"
     >
       <div>
         <h2 className="display max-w-[14ch] text-[clamp(3rem,10vw,10rem)]">
