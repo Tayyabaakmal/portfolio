@@ -83,6 +83,6 @@ Validate with `npm run test:chat`, `npm run typecheck` and `npm run build`. The 
 
 ## Contact inquiries inside chat
 
-Visitors can open **Leave your contact details** and supply their name, project details, and either an email address or phone number. The form requires consent and submits to the approved FormSubmit service, which routes notifications to `tkcreators01@gmail.com`. Chat transcripts are not included. Submission opens a separate tab for FormSubmit verification and confirmation; the chat does not claim delivery before that step.
+Visitors can open **Leave your contact details** and supply their name, project details, and either an email address or phone number. The form requires consent and submits to the approved FormSubmit service, which routes notifications to `tayyabaakmal1234@gmail.com`. Chat transcripts are not included. Submission opens a separate tab for FormSubmit verification and confirmation; the chat does not claim delivery before that step.
 
-Before launch, submit one test inquiry on the latest Vercel preview and confirm the FormSubmit activation email in `tkcreators01@gmail.com` (check spam). After activation, send another test and verify delivery. Receipt has not yet been tested. FormSubmit's default CAPTCHA remains enabled. No application database or lead dashboard is provided by this integration.
+Before launch, submit one test inquiry on the latest Vercel preview and confirm the FormSubmit activation email in `tayyabaakmal1234@gmail.com` (check spam). After activation, send another test and verify delivery. Receipt has not yet been tested. FormSubmit's default CAPTCHA remains enabled. No application database or lead dashboard is provided by this integration.
