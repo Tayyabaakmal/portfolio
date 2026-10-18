@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: { title: `${profile.name} — ${profile.title}`, description: profile.siteDescription, type: "website", siteName: profile.name },
   twitter: { card: "summary_large_image" },
 };
-export const viewport: Viewport = { themeColor: "#3A2BFF" };
+export const viewport: Viewport = { themeColor: "#3A2BFF", interactiveWidget: "resizes-content" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const jsonLd = {
