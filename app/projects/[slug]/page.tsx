@@ -52,10 +52,11 @@ export default function CaseStudy({ params }: { params: { slug: string } }) {
           {p.slug === "the-carrot-cartel" && (
             <a
               href="/projects/the-carrot-cartel/case-study.pdf"
-              download="Carrot-Cartel-Complete-Case-Study.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-block rounded-full border border-ink/30 px-7 py-3.5 font-medium transition-colors hover:bg-ink hover:text-paper"
             >
-              Download 25-Slide Case Study PDF
+              View Full Case Study
             </a>
           )}
         </div>
