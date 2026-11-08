@@ -63,7 +63,7 @@ export default function CaseStudy({ params }: { params: { slug: string } }) {
       </header>
 
       <Reveal className="px-5 md:px-10">
-        <Cover src={cover} name={p.name} color={p.color} sizes="100vw" priority aspect="aspect-[16/10] md:aspect-[16/8]" hint={`public/projects/${p.slug}/cover.jpg`} />
+        <Cover src={cover} name={p.name} color={p.color} sizes="100vw" priority aspect={p.slug === "the-carrot-cartel" ? "aspect-[32/27]" : "aspect-[16/10] md:aspect-[16/8]"} fit={p.slug === "the-carrot-cartel" ? "contain" : "cover"} hint={`public/projects/${p.slug}/cover.jpg`} />
       </Reveal>
 
       <section className="grid gap-16 px-5 py-20 md:grid-cols-12 md:px-10 md:py-32">

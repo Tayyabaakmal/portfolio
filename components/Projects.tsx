@@ -52,7 +52,7 @@ export default function Projects({ projects, covers }: Props) {
               </div>
               {/* Touch devices have no hover, so the cover sits inline. */}
               <div className="mt-4 hidden max-w-md [@media(hover:none)]:block">
-                <Cover src={covers[p.slug]} name={p.name} color={p.color} sizes="90vw" hint={`public/projects/${p.slug}/cover.jpg`} />
+                <Cover src={covers[p.slug]} name={p.name} color={p.color} sizes="90vw" aspect={p.slug === "the-carrot-cartel" ? "aspect-[32/27]" : "aspect-[16/10]"} fit={p.slug === "the-carrot-cartel" ? "contain" : "cover"} hint={`public/projects/${p.slug}/cover.jpg`} />
                 <p className="mt-2 text-sm">{p.description ?? p.category} · View project</p>
               </div>
             </TransitionLink>
@@ -64,7 +64,7 @@ export default function Projects({ projects, covers }: Props) {
         <div className="relative">
           {projects.map((p, i) => (
             <div key={p.slug} className={`transition-opacity duration-300 ${i === active ? "relative opacity-100" : "absolute inset-0 opacity-0"}`}>
-              <Cover src={covers[p.slug]} name={p.name} color={p.color} sizes="32vw" hint={`public/projects/${p.slug}/cover.jpg`} />
+              <Cover src={covers[p.slug]} name={p.name} color={p.color} sizes="32vw" aspect={p.slug === "the-carrot-cartel" ? "aspect-[32/27]" : "aspect-[16/10]"} fit={p.slug === "the-carrot-cartel" ? "contain" : "cover"} hint={`public/projects/${p.slug}/cover.jpg`} />
             </div>
           ))}
         </div>
