@@ -40,14 +40,25 @@ export default function CaseStudy({ params }: { params: { slug: string } }) {
       <header className="px-5 pb-10 pt-32 md:px-10 md:pt-44">
         <p className="text-lg">{p.category}</p>
         <h1 className="display mt-4 text-[clamp(3rem,12vw,12rem)]">{p.name}</h1>
-        <a
-          href={p.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-8 inline-block rounded-full bg-ultra px-7 py-3.5 font-medium text-paper transition-transform hover:-translate-y-0.5"
-        >
-          Visit live website
-        </a>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <a
+            href={p.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block rounded-full bg-ultra px-7 py-3.5 font-medium text-paper transition-transform hover:-translate-y-0.5"
+          >
+            View Website
+          </a>
+          {p.slug === "the-carrot-cartel" && (
+            <a
+              href="/projects/the-carrot-cartel/case-study.pdf"
+              download="Carrot-Cartel-Complete-Case-Study.pdf"
+              className="inline-block rounded-full border border-ink/30 px-7 py-3.5 font-medium transition-colors hover:bg-ink hover:text-paper"
+            >
+              Download 25-Slide Case Study PDF
+            </a>
+          )}
+        </div>
       </header>
 
       <Reveal className="px-5 md:px-10">
