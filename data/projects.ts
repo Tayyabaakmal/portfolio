@@ -202,6 +202,57 @@ export const projects: Project[] = [
     ],
     contribution,
   },
+
+  {
+    slug: "poseidon-offshore-energy",
+    name: "Poseidon Offshore Energy",
+    url: "https://poseidonoffshoreenergy.com/",
+    category: "Offshore engineering",
+    color: "#123B50",
+    description: "An offshore engineering website case study.",
+    overview: [
+      "Poseidon Offshore Energy's website presents its offshore engineering capabilities, company story and enquiry paths. This case study documents the site structure and visual system across 24 selected sections.",
+      "The presentation follows the visitor from the homepage through service information, technical capability, company context and contact options."
+    ],
+    approach: [
+      "The case study is based on supplied project screenshots and captures from the live website. It preserves the site's layouts and imagery while arranging the material into a clear, numbered presentation.",
+      "The visual system uses the original Space Grotesk typeface and palette, with the section order emphasizing the engineering offer and clear enquiry routes."
+    ],
+    objective: [
+      "Show how the website communicates specialist offshore engineering services and helps prospective clients find relevant information and contact the company."
+    ],
+    contribution: [
+      "Case study curation and presentation",
+      "Organization of 24 website sections",
+      "Documentation of the visual system and visitor flow",
+      "Presentation of services, capabilities and contact paths"
+    ],
+  },
+  {
+    slug: "tat-ming",
+    name: "Tat Ming",
+    url: "https://tatming.com.sg/",
+    category: "Wallcoverings and interiors",
+    color: "#7D8467",
+    description: "A curated website case study for a wallcovering and interior materials retailer.",
+    overview: [
+      "Tat Ming's online store brings together wallcoverings, custom print, product collections and brand information. This curated 25-section case study documents the site's product discovery and visual presentation.",
+      "The selected pages show how visitors can move from inspiration and collection browsing to individual product details."
+    ],
+    approach: [
+      "The case study was curated from the existing site and product pages, preserving the source imagery and layouts. Repetitive sections were removed to keep the presentation focused and varied.",
+      "The sequence highlights the visual palette, typography, brand collections, custom print and product browsing."
+    ],
+    objective: [
+      "Present the retailer's online product experience and show the range of ways its wallcovering collections are organized and explored."
+    ],
+    contribution: [
+      "Case study curation and presentation",
+      "Selection and ordering of 25 website sections",
+      "Documentation of product discovery and collection layouts",
+      "Presentation of brand and custom print content"
+    ],
+  },
 ];
 
 export const getProject = (slug: string) => projects.find((p) => p.slug === slug);
