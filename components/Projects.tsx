@@ -45,7 +45,7 @@ function ProjectCard({
 
   return (
     <article className="min-w-0">
-      <TransitionLink href={\`/projects/\${project.slug}\`} className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ultra">
+      <TransitionLink href={`/projects/${project.slug}`} className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ultra">
         <div className="relative overflow-hidden">
           <Cover
             src={cover}
@@ -54,7 +54,7 @@ function ProjectCard({
             sizes={featured ? "(min-width:1024px) 58vw, 100vw" : "(min-width:1024px) 33vw, 100vw"}
             aspect="aspect-[4/3]"
             fit="contain"
-            hint={\`public/projects/\${project.slug}/cover.jpg\`}
+            hint={`public/projects/${project.slug}/cover.jpg`}
           />
           <span className="absolute left-4 top-4 rounded-full bg-paper/90 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.12em] text-ink backdrop-blur-sm">
             {project.category}
@@ -68,14 +68,14 @@ function ProjectCard({
 
         <div className={compact ? "pt-4" : "pt-5"}>
           <div className="flex items-start justify-between gap-4">
-            <h3 className={\`display leading-[0.98] \${featured ? "text-4xl md:text-6xl" : compact ? "text-3xl md:text-4xl" : "text-3xl md:text-4xl"}\`}>
+            <h3 className={`display leading-[0.98] ${featured ? "text-4xl md:text-6xl" : compact ? "text-3xl md:text-4xl" : "text-3xl md:text-4xl"}`}>
               {project.name}
             </h3>
             <span aria-hidden="true" className="mt-1 text-xl transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
               ↗
             </span>
           </div>
-          <p className={\`mt-3 max-w-xl text-base leading-relaxed \${compact ? "line-clamp-2" : "line-clamp-3"}\`}>
+          <p className={`mt-3 max-w-xl text-base leading-relaxed ${compact ? "line-clamp-2" : "line-clamp-3"}`}>
             {project.description}
           </p>
           {!compact && (
@@ -125,7 +125,7 @@ export default function Projects({ projects, covers }: Props) {
               type="button"
               aria-pressed={active}
               onClick={() => setFilter(item.id)}
-              className={\`rounded-full border px-4 py-2.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ultra \${active ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink/60"}\`}
+              className={`rounded-full border px-4 py-2.5 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ultra ${active ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink/60"}`}
             >
               {item.label} <span className={active ? "ml-1 opacity-60" : "ml-1 opacity-40"}>{count}</span>
             </button>
