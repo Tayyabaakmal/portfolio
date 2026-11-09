@@ -1,210 +1,145 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import TransitionLink from "./TransitionLink";
 import Cover from "./Cover";
 import type { Project } from "@/data/projects";
 
-type Filter = "all" | "commerce" | "business" | "engineering";
+type Props = { projects: Project[]; covers: Record<string, string | null> };
 
-const filters: { id: Filter; label: string }[] = [
-  { id: "all", label: "All work" },
-  { id: "commerce", label: "Commerce" },
-  { id: "business", label: "Business & content" },
-  { id: "engineering", label: "Engineering" },
-];
+const caseStudySlugs = ["the-carrot-cartel", "poseidon-offshore-energy", "tat-ming"];
 
-const commerceCategories = new Set([
-  "Brand website",
-  "Organic products",
-  "Watch retail",
-  "Online shop",
-  "Wallcoverings and interiors",
-]);
-const engineeringCategories = new Set(["Offshore engineering"]);
-
-function matchesFilter(project: Project, filter: Filter) {
-  if (filter === "all") return true;
-  if (filter === "commerce") return commerceCategories.has(project.category);
-  if (filter === "engineering") return engineeringCategories.has(project.category);
-  return !commerceCategories.has(project.category) && !engineeringCategories.has(project.category);
-}
-
-function ProjectFeature({
+function Feature({
   project,
   cover,
-  index,
-  variant,
+  number,
+  size,
 }: {
   project: Project;
   cover: string | null;
-  index: number;
-  variant: "primary" | "secondary";
+  number: number;
+  size: "large" | "small";
 }) {
-  const primary = variant === "primary";
+  const large = size === "large";
 
   return (
-    <article className={primary ? "lg:col-span-7" : "lg:col-span-5 lg:mt-24"}>
+    <article className={large ? "lg:col-span-7" : "lg:col-span-5"}>
       <TransitionLink
         href={`/projects/${project.slug}`}
         className="group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ultra"
       >
-        <div className="relative overflow-hidden border border-ink/10 bg-paper">
-          <Cover
-            src={cover}
-            name={project.name}
-            color={project.color}
-            sizes={primary ? "(min-width:1024px) 58vw, 100vw" : "(min-width:1024px) 42vw, 100vw"}
-            aspect="aspect-[4/3]"
-            fit="contain"
-            hint={`public/projects/${project.slug}/cover.jpg`}
-          />
-          <span className="absolute left-4 top-4 rounded-full bg-paper/90 px-3 py-1.5 text-xs font-medium uppercase tracking-[0.14em] text-ink">
-            {project.category}
+        <div
+          className={`relative overflow-hidden bg-paper p-3 transition-colors duration-500 group-hover:bg-white md:p-5 ${large ? "aspect-[1.16/1]" : "aspect-[1.08/1]"}`}
+          style={{ backgroundColor: `${project.color}12` }}
+        >
+          <div className="h-full w-full overflow-hidden">
+            <Cover
+              src={cover}
+              name={project.name}
+              color={project.color}
+              sizes={large ? "(min-width:1024px) 55vw, 100vw" : "(min-width:1024px) 40vw, 100vw"}
+              aspect="h-full w-full"
+              fit="contain"
+              hint={`public/projects/${project.slug}/cover.jpg`}
+            />
+          </div>
+          <span className="absolute right-5 top-5 grid h-10 w-10 place-items-center rounded-full bg-paper text-sm text-ink transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:bg-ultra group-hover:text-white md:right-7 md:top-7">
+            ↗
           </span>
-          {project.slug === "the-carrot-cartel" && (
-            <span className="absolute bottom-4 left-4 rounded-full bg-ink/90 px-3 py-1.5 text-xs font-medium text-paper">
-              Complete 25-slide case study
-            </span>
-          )}
         </div>
       </TransitionLink>
 
-      <div className="mt-5 flex items-start justify-between gap-5">
+      <div className="mt-5 flex items-start justify-between gap-4 border-t border-ink/20 pt-4">
         <div>
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] opacity-50">
-            {String(index).padStart(2, "0")} / Selected project
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.17em] opacity-55">
+            {String(number).padStart(2, "0")} <span className="mx-2 opacity-50">/</span> {project.category}
           </p>
-          <TransitionLink href={`/projects/${project.slug}`} className="group">
-            <h3 className={`display leading-[0.94] transition-colors group-hover:text-ultra ${primary ? "text-5xl md:text-7xl" : "text-4xl md:text-5xl"}`}>
+          <TransitionLink href={`/projects/${project.slug}`} className="group/title">
+            <h3 className={`display leading-[0.95] transition-colors group-hover/title:text-ultra ${large ? "text-4xl md:text-6xl" : "text-3xl md:text-4xl"}`}>
               {project.name}
             </h3>
           </TransitionLink>
-          <p className="mt-4 max-w-xl text-base leading-relaxed md:text-lg">{project.description}</p>
         </div>
-        <span aria-hidden="true" className="mt-8 hidden text-2xl transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 md:block">
-          ↗
+        <span className="pt-1 text-right text-xs uppercase tracking-[0.12em] opacity-45">
+          Full case<br />study
         </span>
       </div>
     </article>
   );
 }
 
-function ProjectIndexRow({ project, index }: { project: Project; index: number }) {
+function ArchiveRow({ project, number }: { project: Project; number: number }) {
   return (
-    <article className="group border-t border-ink/20 py-5 md:py-6">
+    <article className="group border-t border-ink/20">
       <TransitionLink
         href={`/projects/${project.slug}`}
-        className="grid gap-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ultra md:grid-cols-12 md:items-baseline md:gap-4"
+        className="grid min-h-20 gap-2 py-4 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ultra md:grid-cols-[3rem_1fr_14rem_2rem] md:items-center md:gap-5 md:py-5"
       >
-        <span className="text-sm tabular-nums opacity-45 md:col-span-1">{String(index).padStart(2, "0")}</span>
-        <span className="display text-3xl leading-none transition-colors group-hover:text-ultra md:col-span-5 md:text-4xl">{project.name}</span>
-        <span className="text-sm md:col-span-2">{project.category}</span>
-        <span className="text-sm leading-relaxed opacity-65 md:col-span-3">{project.description}</span>
-        <span aria-hidden="true" className="hidden text-xl transition-transform group-hover:translate-x-1 md:col-span-1 md:block">↗</span>
+        <span className="text-xs tabular-nums opacity-45">{String(number).padStart(2, "0")}</span>
+        <span className="display text-2xl leading-none transition-transform duration-300 group-hover:translate-x-1 group-hover:text-ultra md:text-3xl">{project.name}</span>
+        <span className="text-sm opacity-55">{project.category}</span>
+        <span aria-hidden="true" className="text-xl transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">↗</span>
       </TransitionLink>
     </article>
   );
 }
 
-type Props = { projects: Project[]; covers: Record<string, string | null> };
-
 export default function Projects({ projects, covers }: Props) {
-  const [filter, setFilter] = useState<Filter>("all");
-  const visible = useMemo(() => projects.filter((project) => matchesFilter(project, filter)), [projects, filter]);
-
-  const showEditorial = filter === "all";
-  const featured = showEditorial ? visible.find((project) => project.slug === "the-carrot-cartel") : undefined;
-  const secondarySlugs = new Set(["poseidon-offshore-energy", "tat-ming"]);
-  const secondary = featured ? visible.filter((project) => secondarySlugs.has(project.slug)) : [];
-  const featuredSlugs = new Set([featured?.slug, ...secondary.map((project) => project.slug)]);
-  const indexProjects = featured ? visible.filter((project) => !featuredSlugs.has(project.slug)) : visible;
+  const featured = caseStudySlugs
+    .map((slug) => projects.find((project) => project.slug === slug))
+    .filter((project): project is (typeof projects)[number] => Boolean(project));
+  const archive = projects.filter((project) => !caseStudySlugs.includes(project.slug));
 
   return (
-    <section id="projects" className="px-5 py-24 md:px-10 md:py-40">
-      <div className="mb-10 flex items-center justify-between border-b border-ink/20 pb-4 text-xs font-medium uppercase tracking-[0.16em] md:mb-14">
-        <span>Selected work / 2026</span>
-        <span>{String(projects.length).padStart(2, "0")} projects</span>
+    <section id="projects" className="px-5 py-24 md:px-10 md:py-36">
+      <div className="mb-12 flex items-center justify-between border-y border-ink/20 py-3 text-[11px] font-medium uppercase tracking-[0.16em] md:mb-16">
+        <span>Selected work <span className="mx-2 opacity-40">/</span> Portfolio</span>
+        <span>{String(projects.length).padStart(2, "0")} projects <span className="ml-2 opacity-40">2026</span></span>
       </div>
 
-      <header className="mb-12 grid gap-6 md:mb-16 md:grid-cols-12 md:items-end">
-        <h2 className="display text-[clamp(4rem,14vw,13rem)] leading-[0.78] md:col-span-8">Projects</h2>
-        <p className="max-w-sm text-lg leading-relaxed md:col-span-4 md:justify-self-end">
-          A selection of websites and digital experiences for brands, shops and service businesses.
+      <header className="mb-14 grid gap-7 md:mb-24 md:grid-cols-12 md:items-end">
+        <h2 className="display text-[clamp(4.5rem,15vw,14rem)] leading-[0.72] tracking-[-0.065em] md:col-span-8">
+          Projects<span className="text-ultra">.</span>
+        </h2>
+        <p className="max-w-sm text-base leading-relaxed md:col-span-4 md:justify-self-end md:pb-1 md:text-lg">
+          Websites and digital experiences, made with care for the people and brands behind them.
         </p>
       </header>
 
-      <nav aria-label="Filter projects" className="mb-12 flex flex-wrap gap-x-6 gap-y-2 border-b border-ink/20 pb-4">
-        {filters.map((item) => {
-          const count = projects.filter((project) => matchesFilter(project, item.id)).length;
-          const active = filter === item.id;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              aria-pressed={active}
-              onClick={() => setFilter(item.id)}
-              className={`py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ultra ${active ? "text-ultra" : "opacity-55 hover:opacity-100"}`}
-            >
-              {item.label} <span className="ml-1 tabular-nums opacity-55">{String(count).padStart(2, "0")}</span>
-            </button>
-          );
-        })}
-      </nav>
+      <div className="mb-6 flex items-center justify-between border-b border-ink/20 pb-3 text-[11px] font-medium uppercase tracking-[0.16em]">
+        <span>Featured case studies</span>
+        <span>01 — {String(featured.length).padStart(2, "0")}</span>
+      </div>
 
-      {featured && (
-        <>
-          <div className="grid gap-x-10 gap-y-14 lg:grid-cols-12">
-            <ProjectFeature
-              project={featured}
-              cover={covers[featured.slug]}
-              index={projects.findIndex((p) => p.slug === featured.slug) + 1}
-              variant="primary"
-            />
-            {secondary.map((project) => (
-              <ProjectFeature
+      <div className="grid gap-x-10 gap-y-14 lg:grid-cols-12 lg:gap-y-24">
+        {featured.map((project, index) => (
+          <Feature
+            key={project.slug}
+            project={project}
+            cover={covers[project.slug]}
+            number={projects.findIndex((item) => item.slug === project.slug) + 1}
+            size={index === 0 ? "large" : "small"}
+          />
+        ))}
+      </div>
+
+      {archive.length > 0 && (
+        <div className="mt-24 md:mt-36">
+          <div className="mb-8 flex items-end justify-between border-b border-ink/20 pb-4">
+            <div>
+              <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.16em] opacity-55">The archive</p>
+              <h3 className="display text-4xl leading-none md:text-6xl">More work</h3>
+            </div>
+            <span className="text-xs tabular-nums opacity-50">{String(archive.length).padStart(2, "0")} projects</span>
+          </div>
+          <div className="grid md:grid-cols-2 md:gap-x-10">
+            {archive.map((project) => (
+              <ArchiveRow
                 key={project.slug}
                 project={project}
-                cover={covers[project.slug]}
-                index={projects.findIndex((p) => p.slug === project.slug) + 1}
-                variant="secondary"
+                number={projects.findIndex((item) => item.slug === project.slug) + 1}
               />
             ))}
           </div>
-          {indexProjects.length > 0 && (
-            <div className="mt-24">
-              <div className="mb-3 flex items-end justify-between">
-                <h3 className="display text-3xl md:text-4xl">More projects</h3>
-                <span className="text-xs uppercase tracking-[0.14em] opacity-50">Selected index</span>
-              </div>
-              {indexProjects.map((project) => (
-                <ProjectIndexRow
-                  key={project.slug}
-                  project={project}
-                  index={projects.findIndex((p) => p.slug === project.slug) + 1}
-                />
-              ))}
-            </div>
-          )}
-        </>
-      )}
-
-      {!featured && (
-        <div>
-          <div className="mb-3 flex items-end justify-between">
-            <h3 className="display text-3xl md:text-4xl">{filters.find((item) => item.id === filter)?.label}</h3>
-            <span className="text-xs uppercase tracking-[0.14em] opacity-50">{String(visible.length).padStart(2, "0")} projects</span>
-          </div>
-          {visible.map((project) => (
-            <ProjectIndexRow
-              key={project.slug}
-              project={project}
-              index={projects.findIndex((p) => p.slug === project.slug) + 1}
-            />
-          ))}
-          {visible.length === 0 && (
-            <p role="status" className="border-t border-ink/20 py-8 text-lg">No projects match this category yet.</p>
-          )}
         </div>
       )}
     </section>
