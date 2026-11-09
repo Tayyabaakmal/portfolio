@@ -49,9 +49,9 @@ export default function CaseStudy({ params }: { params: { slug: string } }) {
           >
             View Website
           </a>
-          {p.slug === "the-carrot-cartel" && (
+          {["the-carrot-cartel", "poseidon-offshore-energy", "tat-ming"].includes(p.slug) && (
             <a
-              href="/projects/the-carrot-cartel/case-study.pdf"
+              href={`/projects/${p.slug}/case-study.pdf`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block rounded-full border border-ink/30 px-7 py-3.5 font-medium transition-colors hover:bg-ink hover:text-paper"
